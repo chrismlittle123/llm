@@ -31,6 +31,12 @@ class LLMSettings(BaseSettings):
     langfuse_secret_key: str | None = None
     langfuse_host: str = "https://cloud.langfuse.com"
 
+    # OTLP Configuration (for metrics export)
+    otlp_endpoint: str = "http://localhost:4317"
+    otlp_insecure: bool = True
+    service_name: str = "palindrom-llm"
+    service_environment: str = "development"
+
 
 # Global settings instance
 _settings: LLMSettings | None = None

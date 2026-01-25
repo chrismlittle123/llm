@@ -19,6 +19,12 @@ from palindrom_ai.llm.structured import extract, extract_stream
 
 # Lazy imports for observability (langfuse may not be compatible with all Python versions)
 if TYPE_CHECKING:
+    from palindrom_ai.llm.metrics import (
+        MetricsBridge,
+        collect_metrics_once,
+        init_metrics_bridge,
+        stop_metrics_bridge,
+    )
     from palindrom_ai.llm.observability import (
         add_trace_metadata,
         flush_traces,
@@ -52,6 +58,11 @@ __all__ = [
     "set_trace_user",
     "set_trace_session",
     "flush_traces",
+    # Metrics
+    "init_metrics_bridge",
+    "collect_metrics_once",
+    "stop_metrics_bridge",
+    "MetricsBridge",
     # Prompts
     "get_prompt",
     "get_prompt_with_vars",
@@ -65,7 +76,7 @@ __all__ = [
 
 
 def __getattr__(name: str):
-    """Lazy import for observability and prompt modules."""
+    """Lazy import for observability, metrics, and prompt modules."""
     if name in (
         "init_observability",
         "trace",
@@ -77,6 +88,15 @@ def __getattr__(name: str):
         from palindrom_ai.llm import observability
 
         return getattr(observability, name)
+    if name in (
+        "init_metrics_bridge",
+        "collect_metrics_once",
+        "stop_metrics_bridge",
+        "MetricsBridge",
+    ):
+        from palindrom_ai.llm import metrics
+
+        return getattr(metrics, name)
     if name in ("get_prompt", "get_prompt_with_vars", "get_chat_prompt", "get_langfuse"):
         from palindrom_ai.llm import prompts
 

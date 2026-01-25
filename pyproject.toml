@@ -22,8 +22,13 @@ rag = [
 eval = [
     "deepeval>=2.0.0",
 ]
+metrics = [
+    "opentelemetry-sdk>=1.20.0",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.20.0",
+    "httpx>=0.25.0",
+]
 all = [
-    "palindrom-ai-llm[rag,eval]",
+    "palindrom-ai-llm[rag,eval,metrics]",
 ]
 dev = [
     "pytest>=8.0.0",

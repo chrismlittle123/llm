@@ -1192,6 +1192,9 @@ dependencies = [
 all = [
     { name = "chromadb" },
     { name = "deepeval" },
+    { name = "httpx" },
+    { name = "opentelemetry-exporter-otlp-proto-grpc" },
+    { name = "opentelemetry-sdk" },
 ]
 dev = [
     { name = "pytest" },
@@ -1202,6 +1205,11 @@ dev = [
 eval = [
     { name = "deepeval" },
 ]
+metrics = [
+    { name = "httpx" },
+    { name = "opentelemetry-exporter-otlp-proto-grpc" },
+    { name = "opentelemetry-sdk" },
+]
 rag = [
     { name = "chromadb" },
 ]
@@ -1210,10 +1218,13 @@ rag = [
 requires-dist = [
     { name = "chromadb", marker = "extra == 'rag'", specifier = ">=0.5.0" },
     { name = "deepeval", marker = "extra == 'eval'", specifier = ">=2.0.0" },
+    { name = "httpx", marker = "extra == 'metrics'", specifier = ">=0.25.0" },
     { name = "instructor", specifier = ">=1.7.0" },
     { name = "langfuse", specifier = ">=2.0.0" },
     { name = "litellm", specifier = ">=1.55.0" },
-    { name = "palindrom-ai-llm", extras = ["rag", "eval"], marker = "extra == 'all'" },
+    { name = "opentelemetry-exporter-otlp-proto-grpc", marker = "extra == 'metrics'", specifier = ">=1.20.0" },
+    { name = "opentelemetry-sdk", marker = "extra == 'metrics'", specifier = ">=1.20.0" },
+    { name = "palindrom-ai-llm", extras = ["rag", "eval", "metrics"], marker = "extra == 'all'" },
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "pydantic-settings", specifier = ">=2.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
@@ -1222,7 +1233,7 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8.0" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.1a7" },
 ]
-provides-extras = ["rag", "eval", "all", "dev"]
+provides-extras = ["rag", "eval", "metrics", "all", "dev"]
 
 [[package]]
 name = "platformdirs"
