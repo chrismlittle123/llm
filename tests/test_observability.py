@@ -158,29 +158,27 @@ class TestTraceHelpers:
     """Tests for trace helper functions."""
 
     def test_add_trace_metadata(self):
-        """Test add_trace_metadata calls client.update_current_span."""
-        mock_client = MagicMock()
-        with patch("palindrom_ai.llm.observability.get_client", return_value=mock_client):
+        """Test add_trace_metadata calls langfuse_context.update_current_observation."""
+        with patch("palindrom_ai.llm.observability.langfuse_context") as mock_context:
             add_trace_metadata({"key": "value"})
-            mock_client.update_current_span.assert_called_once_with(metadata={"key": "value"})
+            mock_context.update_current_observation.assert_called_once_with(
+                metadata={"key": "value"}
+            )
 
     def test_set_trace_user(self):
-        """Test set_trace_user calls client.update_current_trace."""
-        mock_client = MagicMock()
-        with patch("palindrom_ai.llm.observability.get_client", return_value=mock_client):
+        """Test set_trace_user calls langfuse_context.update_current_trace."""
+        with patch("palindrom_ai.llm.observability.langfuse_context") as mock_context:
             set_trace_user("user-123")
-            mock_client.update_current_trace.assert_called_once_with(user_id="user-123")
+            mock_context.update_current_trace.assert_called_once_with(user_id="user-123")
 
     def test_set_trace_session(self):
-        """Test set_trace_session calls client.update_current_trace."""
-        mock_client = MagicMock()
-        with patch("palindrom_ai.llm.observability.get_client", return_value=mock_client):
+        """Test set_trace_session calls langfuse_context.update_current_trace."""
+        with patch("palindrom_ai.llm.observability.langfuse_context") as mock_context:
             set_trace_session("session-456")
-            mock_client.update_current_trace.assert_called_once_with(session_id="session-456")
+            mock_context.update_current_trace.assert_called_once_with(session_id="session-456")
 
     def test_flush_traces(self):
-        """Test flush_traces calls client.flush."""
-        mock_client = MagicMock()
-        with patch("palindrom_ai.llm.observability.get_client", return_value=mock_client):
+        """Test flush_traces calls langfuse_context.flush."""
+        with patch("palindrom_ai.llm.observability.langfuse_context") as mock_context:
             flush_traces()
-            mock_client.flush.assert_called_once()
+            mock_context.flush.assert_called_once()

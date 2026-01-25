@@ -10,7 +10,7 @@ from functools import wraps
 from typing import ParamSpec, TypeVar, overload
 
 import litellm
-from langfuse import get_client, observe
+from langfuse.decorators import langfuse_context, observe
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -106,14 +106,13 @@ def trace(
         @wraps(fn)
         @observe(name=name or fn_name)
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            # Add metadata/user/session to current trace using v3 API
-            client = get_client()
+            # Add metadata/user/session to current trace using v2 API
             if metadata:
-                client.update_current_span(metadata=metadata)
+                langfuse_context.update_current_observation(metadata=metadata)
             if user_id:
-                client.update_current_trace(user_id=user_id)
+                langfuse_context.update_current_trace(user_id=user_id)
             if session_id:
-                client.update_current_trace(session_id=session_id)
+                langfuse_context.update_current_trace(session_id=session_id)
 
             return await fn(*args, **kwargs)
 
@@ -143,8 +142,7 @@ def add_trace_metadata(metadata: dict) -> None:
         ...     add_trace_metadata({"doc_size": len(doc)})
         ...     return await summarize(doc)
     """
-    client = get_client()
-    client.update_current_span(metadata=metadata)
+    langfuse_context.update_current_observation(metadata=metadata)
 
 
 def set_trace_user(user_id: str) -> None:
@@ -160,8 +158,7 @@ def set_trace_user(user_id: str) -> None:
         ...     set_trace_user(user_id)
         ...     return await complete(...)
     """
-    client = get_client()
-    client.update_current_trace(user_id=user_id)
+    langfuse_context.update_current_trace(user_id=user_id)
 
 
 def set_trace_session(session_id: str) -> None:
@@ -177,8 +174,7 @@ def set_trace_session(session_id: str) -> None:
         ...     set_trace_session(session_id)
         ...     return await complete(...)
     """
-    client = get_client()
-    client.update_current_trace(session_id=session_id)
+    langfuse_context.update_current_trace(session_id=session_id)
 
 
 def flush_traces() -> None:
@@ -195,5 +191,4 @@ def flush_traces() -> None:
         ... finally:
         ...     flush_traces()
     """
-    client = get_client()
-    client.flush()
+    langfuse_context.flush()

@@ -33,26 +33,31 @@ class TestMetricsBridge:
 
     def test_setup_langfuse_requires_credentials(self):
         """Test that _setup_langfuse requires credentials."""
+        from palindrom_ai.llm.config import LLMSettings
+
         bridge = MetricsBridge()
-        with patch.dict(os.environ, {}, clear=True):
+        # Mock settings with no credentials
+        mock_settings = LLMSettings(
+            langfuse_public_key=None,
+            langfuse_secret_key=None,
+        )
+        with patch("palindrom_ai.llm.metrics.get_settings", return_value=mock_settings):
             with pytest.raises(ValueError, match="LANGFUSE_PUBLIC_KEY"):
                 bridge._setup_langfuse()
 
     def test_setup_langfuse_requires_secret_key(self):
         """Test that _setup_langfuse requires secret key."""
+        from palindrom_ai.llm.config import LLMSettings
+
         bridge = MetricsBridge()
-        with patch.dict(os.environ, {"LANGFUSE_PUBLIC_KEY": "pk-test"}, clear=True):
-            # Need to reset the settings cache
-            from palindrom_ai.llm.config import _settings
-
-            import palindrom_ai.llm.config
-
-            palindrom_ai.llm.config._settings = None
-            try:
-                with pytest.raises(ValueError, match="LANGFUSE_SECRET_KEY"):
-                    bridge._setup_langfuse()
-            finally:
-                palindrom_ai.llm.config._settings = _settings
+        # Mock settings with only public key
+        mock_settings = LLMSettings(
+            langfuse_public_key="pk-test",
+            langfuse_secret_key=None,
+        )
+        with patch("palindrom_ai.llm.metrics.get_settings", return_value=mock_settings):
+            with pytest.raises(ValueError, match="LANGFUSE_SECRET_KEY"):
+                bridge._setup_langfuse()
 
     def test_parse_metrics_empty_data(self):
         """Test _parse_metrics with empty data."""
