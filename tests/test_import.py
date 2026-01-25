@@ -10,7 +10,7 @@ def test_import_package():
 
 def test_import_submodules():
     """Test that submodules can be imported."""
-    from palindrom_ai.llm import rag, eval
+    from palindrom_ai.llm import eval, rag
 
     assert rag is not None
     assert eval is not None

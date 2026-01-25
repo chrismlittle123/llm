@@ -9,3 +9,20 @@ Unified Python SDK for LLM operations including:
 """
 
 __version__ = "0.1.0"
+
+from palindrom_ai.llm.completion import complete, get_cost, get_usage, stream
+from palindrom_ai.llm.config import LLMSettings, configure, get_settings
+
+__all__ = [
+    # Version
+    "__version__",
+    # Completion
+    "complete",
+    "stream",
+    "get_cost",
+    "get_usage",
+    # Config
+    "get_settings",
+    "configure",
+    "LLMSettings",
+]
