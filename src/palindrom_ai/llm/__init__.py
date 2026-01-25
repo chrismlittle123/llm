@@ -12,6 +12,7 @@ __version__ = "0.1.0"
 
 from palindrom_ai.llm.completion import complete, get_cost, get_usage, stream
 from palindrom_ai.llm.config import LLMSettings, configure, get_settings
+from palindrom_ai.llm.structured import extract, extract_stream
 
 __all__ = [
     # Version
@@ -21,6 +22,9 @@ __all__ = [
     "stream",
     "get_cost",
     "get_usage",
+    # Structured output
+    "extract",
+    "extract_stream",
     # Config
     "get_settings",
     "configure",

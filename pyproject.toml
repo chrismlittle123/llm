@@ -29,7 +29,7 @@ dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.24.0",
     "ruff>=0.8.0",
-    "mypy>=1.13.0",
+    "ty>=0.0.1a7",
 ]
 
 [build-system]
@@ -46,10 +46,15 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
-[tool.mypy]
-python_version = "3.11"
-strict = true
-ignore_missing_imports = true
+[tool.ty.environment]
+python-version = "3.11"
+
+[tool.ty.src]
+include = ["src"]
+
+[tool.ty.rules]
+# litellm uses Pydantic extra='allow' for dynamic fields like 'usage'
+unresolved-attribute = "warn"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

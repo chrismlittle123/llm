@@ -114,11 +114,16 @@ def get_usage(response: ModelResponse) -> dict[str, int]:
     Returns:
         Dict with prompt_tokens, completion_tokens, total_tokens
 
+    Raises:
+        ValueError: If usage information is not available in the response
+
     Example:
         >>> response = await complete(model="gpt-4o", messages=[...])
         >>> usage = get_usage(response)
         >>> print(f"Total tokens: {usage['total_tokens']}")
     """
+    if response.usage is None:
+        raise ValueError("Usage information not available in response")
     return {
         "prompt_tokens": response.usage.prompt_tokens,
         "completion_tokens": response.usage.completion_tokens,
