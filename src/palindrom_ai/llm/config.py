@@ -2,6 +2,7 @@
 Configuration for the LLM package.
 
 Uses pydantic-settings to load from environment variables.
+Supports dependency injection for testing flexibility.
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -25,6 +26,11 @@ class LLMSettings(BaseSettings):
     default_model: str = "gpt-4o"
     default_timeout: float = 60.0
     default_max_retries: int = 3
+
+    # Retry configuration
+    retry_min_wait: float = 1.0  # Minimum wait between retries (seconds)
+    retry_max_wait: float = 60.0  # Maximum wait between retries (seconds)
+    retry_multiplier: float = 2.0  # Exponential backoff multiplier
 
     # Langfuse (for observability)
     langfuse_public_key: str | None = None
@@ -64,3 +70,37 @@ def configure(**kwargs: str | float | int | None) -> None:
     current = get_settings().model_dump()
     current.update({k: v for k, v in kwargs.items() if v is not None})
     _settings = LLMSettings(**current)
+
+
+def reset_settings() -> None:
+    """
+    Reset the global settings instance.
+
+    Useful for testing to ensure a clean state between tests.
+    The next call to get_settings() will create a fresh instance.
+
+    Example:
+        >>> reset_settings()
+        >>> settings = get_settings()  # Fresh instance
+    """
+    global _settings
+    _settings = None
+
+
+def set_settings(settings: LLMSettings) -> None:
+    """
+    Set a custom settings instance.
+
+    Enables dependency injection for testing with custom configurations.
+
+    Args:
+        settings: Custom LLMSettings instance to use
+
+    Example:
+        >>> custom = LLMSettings(default_model="gpt-4o-mini")
+        >>> set_settings(custom)
+        >>> get_settings().default_model
+        'gpt-4o-mini'
+    """
+    global _settings
+    _settings = settings

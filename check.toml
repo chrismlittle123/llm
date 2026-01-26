@@ -1,0 +1,16 @@
+# Check configuration for palindrom-ai-llm
+# Based on palindrom-ai/standards/rulesets/python-internal.toml
+# Moderate checks for internal tools and services
+
+[code.linting.ruff]
+enabled = true
+
+[code.linting.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[code.types.ty]
+enabled = true
+
+[code.unused.vulture]
+enabled = true

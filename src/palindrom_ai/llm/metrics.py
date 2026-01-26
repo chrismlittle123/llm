@@ -14,7 +14,7 @@ import logging
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
-from palindrom_ai.llm.config import get_settings
+from palindrom_ai.llm.config import LLMSettings, get_settings
 
 if TYPE_CHECKING:
     from opentelemetry.metrics import Meter, MeterProvider
@@ -31,12 +31,15 @@ class MetricsBridge:
 
     The bridge periodically queries Langfuse's Metrics V2 API for aggregated
     LLM metrics and reports them as OpenTelemetry observable gauges.
+
+    Supports dependency injection of settings for testing flexibility.
     """
 
     def __init__(
         self,
         poll_interval: float = 60.0,
         lookback_window: float = 300.0,
+        settings: LLMSettings | None = None,
     ) -> None:
         """
         Initialize the metrics bridge.
@@ -44,9 +47,11 @@ class MetricsBridge:
         Args:
             poll_interval: How often to poll Langfuse metrics (in seconds)
             lookback_window: Time window to query for metrics (in seconds)
+            settings: Optional custom LLMSettings instance (uses global if not provided)
         """
         self.poll_interval = poll_interval
         self.lookback_window = lookback_window
+        self._settings = settings
         self._task: asyncio.Task | None = None
         self._running = False
         self._meter: Meter | None = None
@@ -56,6 +61,12 @@ class MetricsBridge:
         # Latest metric values (updated by polling)
         self._metric_values: dict[str, dict[str, float]] = {}
 
+    def _get_settings(self) -> LLMSettings:
+        """Get settings, using injected settings or falling back to global."""
+        if self._settings is not None:
+            return self._settings
+        return get_settings()
+
     def _setup_otel(self) -> None:
         """Set up OpenTelemetry meter and exporter."""
         from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
@@ -63,7 +74,7 @@ class MetricsBridge:
         from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
         from opentelemetry.sdk.resources import Resource
 
-        settings = get_settings()
+        settings = self._get_settings()
 
         resource = Resource.create(
             {
@@ -165,7 +176,7 @@ class MetricsBridge:
         """Set up Langfuse client for API queries."""
         import httpx
 
-        settings = get_settings()
+        settings = self._get_settings()
         if not settings.langfuse_public_key or not settings.langfuse_secret_key:
             raise ValueError(
                 "LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY environment variables required"
@@ -328,6 +339,7 @@ class MetricsBridge:
 def init_metrics_bridge(
     poll_interval: float = 60.0,
     lookback_window: float = 300.0,
+    settings: LLMSettings | None = None,
 ) -> MetricsBridge:
     """
     Initialize and start the metrics bridge.
@@ -338,6 +350,7 @@ def init_metrics_bridge(
     Args:
         poll_interval: How often to poll Langfuse metrics (in seconds)
         lookback_window: Time window to query for metrics (in seconds)
+        settings: Optional custom LLMSettings instance (uses global if not provided)
 
     Returns:
         The initialized MetricsBridge instance
@@ -361,9 +374,25 @@ def init_metrics_bridge(
     _bridge = MetricsBridge(
         poll_interval=poll_interval,
         lookback_window=lookback_window,
+        settings=settings,
     )
     _bridge.start()
     return _bridge
+
+
+def reset_metrics_bridge() -> None:
+    """
+    Reset the global metrics bridge instance without stopping it.
+
+    Useful for testing to clear the global state. Note: This does NOT
+    stop a running bridge - use stop_metrics_bridge() first if needed.
+
+    Example:
+        >>> await stop_metrics_bridge()
+        >>> reset_metrics_bridge()
+    """
+    global _bridge
+    _bridge = None
 
 
 async def collect_metrics_once() -> None:

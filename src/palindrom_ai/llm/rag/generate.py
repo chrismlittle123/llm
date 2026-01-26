@@ -7,7 +7,8 @@ Provides retrieve-and-generate functionality combining vector search with LLM ge
 from ..completion import complete
 from .vectorstore import SearchResult, VectorStore
 
-DEFAULT_SYSTEM_PROMPT = """You are a helpful assistant. Answer the user's question based on the provided context. If the context doesn't contain relevant information, say so.
+DEFAULT_SYSTEM_PROMPT = """You are a helpful assistant. Answer the user's question based on the \
+provided context. If the context doesn't contain relevant information, say so.
 
 Context:
 {context}"""

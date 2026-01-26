@@ -26,13 +26,22 @@ Example:
     ... )
 """
 
-from .embeddings import embed, embed_single
+from .embeddings import (
+    clear_embedding_cache,
+    configure_embedding_cache,
+    embed,
+    embed_single,
+    get_embedding_cache_stats,
+)
 from .generate import retrieve_and_generate
 from .vectorstore import SearchResult, VectorStore
 
 __all__ = [
     "embed",
     "embed_single",
+    "clear_embedding_cache",
+    "configure_embedding_cache",
+    "get_embedding_cache_stats",
     "retrieve_and_generate",
     "SearchResult",
     "VectorStore",

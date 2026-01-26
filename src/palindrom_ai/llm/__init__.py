@@ -13,8 +13,14 @@ from typing import TYPE_CHECKING
 
 __version__ = "0.1.0"
 
-from palindrom_ai.llm.completion import complete, get_cost, get_usage, stream
-from palindrom_ai.llm.config import LLMSettings, configure, get_settings
+from palindrom_ai.llm.completion import RetryConfig, complete, get_cost, get_usage, stream
+from palindrom_ai.llm.config import (
+    LLMSettings,
+    configure,
+    get_settings,
+    reset_settings,
+    set_settings,
+)
 from palindrom_ai.llm.structured import extract, extract_stream
 
 # Lazy imports for observability (langfuse may not be compatible with all Python versions)
@@ -23,6 +29,7 @@ if TYPE_CHECKING:
         MetricsBridge,
         collect_metrics_once,
         init_metrics_bridge,
+        reset_metrics_bridge,
         stop_metrics_bridge,
     )
     from palindrom_ai.llm.observability import (
@@ -42,8 +49,11 @@ if TYPE_CHECKING:
     from palindrom_ai.llm.rag import (
         SearchResult,
         VectorStore,
+        clear_embedding_cache,
+        configure_embedding_cache,
         embed,
         embed_single,
+        get_embedding_cache_stats,
         retrieve_and_generate,
     )
 
@@ -55,6 +65,7 @@ __all__ = [
     "stream",
     "get_cost",
     "get_usage",
+    "RetryConfig",
     # Structured output
     "extract",
     "extract_stream",
@@ -69,6 +80,7 @@ __all__ = [
     "init_metrics_bridge",
     "collect_metrics_once",
     "stop_metrics_bridge",
+    "reset_metrics_bridge",
     "MetricsBridge",
     # Prompts
     "get_prompt",
@@ -77,6 +89,8 @@ __all__ = [
     "get_langfuse",
     # Config
     "get_settings",
+    "set_settings",
+    "reset_settings",
     "configure",
     "LLMSettings",
     # RAG
@@ -85,6 +99,9 @@ __all__ = [
     "embed",
     "embed_single",
     "retrieve_and_generate",
+    "clear_embedding_cache",
+    "configure_embedding_cache",
+    "get_embedding_cache_stats",
 ]
 
 
@@ -105,6 +122,7 @@ def __getattr__(name: str):
         "init_metrics_bridge",
         "collect_metrics_once",
         "stop_metrics_bridge",
+        "reset_metrics_bridge",
         "MetricsBridge",
     ):
         from palindrom_ai.llm import metrics
@@ -120,6 +138,9 @@ def __getattr__(name: str):
         "embed",
         "embed_single",
         "retrieve_and_generate",
+        "clear_embedding_cache",
+        "configure_embedding_cache",
+        "get_embedding_cache_stats",
     ):
         from palindrom_ai.llm import rag
 

@@ -21,6 +21,14 @@ pip install -e ".[dev]"
 - **Simple RAG**: Vector search with ChromaDB
 - **Observability**: Built-in Langfuse integration
 - **Evaluation**: DeepEval integration for testing
+- **Retry Logic**: Configurable exponential backoff for transient failures
+- **Type Safety**: Full type hints with PEP 561 py.typed marker
+
+## Important: Langfuse Version Constraint
+
+This SDK requires **Langfuse v2.x** (`langfuse>=2.0.0,<3.0.0`). This constraint exists because LiteLLM's Langfuse callback integration is not yet compatible with Langfuse v3.
+
+When Langfuse v3 support is added to LiteLLM, this constraint will be relaxed. Track progress at the [LiteLLM repository](https://github.com/BerriAI/litellm).
 
 ## Quick Start
 

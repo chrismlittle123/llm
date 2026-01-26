@@ -2,7 +2,10 @@
 Vector store abstraction over ChromaDB.
 
 Provides a simple interface for storing and searching document embeddings,
-designed for easy migration to Qdrant later.
+designed for easy migration to Qdrant or other vector stores later.
+
+The internal storage implementation is fully encapsulated - no direct access
+to the underlying ChromaDB client or collection is exposed.
 """
 
 from dataclasses import dataclass
@@ -26,7 +29,8 @@ class VectorStore:
     """
     Simple vector store abstraction over ChromaDB.
 
-    Designed for easy migration to Qdrant later.
+    Designed for easy migration to Qdrant or other vector stores later.
+    The internal storage implementation is fully encapsulated.
 
     Example:
         >>> store = VectorStore(collection_name="docs")
@@ -38,6 +42,13 @@ class VectorStore:
         >>> results[0].document
         'Python is great'
     """
+
+    __slots__ = (
+        "embedding_model",
+        "collection_name",
+        "_VectorStore__client",
+        "_VectorStore__collection",
+    )
 
     def __init__(
         self,
@@ -57,11 +68,11 @@ class VectorStore:
         self.collection_name = collection_name
 
         if persist_directory:
-            self._client = chromadb.PersistentClient(path=persist_directory)
+            self.__client = chromadb.PersistentClient(path=persist_directory)
         else:
-            self._client = chromadb.Client()
+            self.__client = chromadb.Client()
 
-        self._collection = self._client.get_or_create_collection(
+        self.__collection = self.__client.get_or_create_collection(
             name=collection_name,
             metadata={"hnsw:space": "cosine"},
         )
@@ -89,7 +100,7 @@ class VectorStore:
         """
         embeddings = await embed(documents, model=self.embedding_model)
 
-        self._collection.add(
+        self.__collection.add(
             documents=documents,
             embeddings=embeddings,
             ids=ids,
@@ -120,7 +131,7 @@ class VectorStore:
         """
         query_embedding = await embed_single(query, model=self.embedding_model)
 
-        results = self._collection.query(
+        results = self.__collection.query(
             query_embeddings=[query_embedding],
             n_results=top_k,
             where=where,
@@ -148,16 +159,16 @@ class VectorStore:
         Args:
             ids: List of document IDs to delete
         """
-        self._collection.delete(ids=ids)
+        self.__collection.delete(ids=ids)
 
     def count(self) -> int:
         """Get number of documents in the store."""
-        return self._collection.count()
+        return self.__collection.count()
 
     def clear(self) -> None:
         """Clear all documents from the collection."""
-        self._client.delete_collection(name=self.collection_name)
-        self._collection = self._client.get_or_create_collection(
+        self.__client.delete_collection(name=self.collection_name)
+        self.__collection = self.__client.get_or_create_collection(
             name=self.collection_name,
             metadata={"hnsw:space": "cosine"},
         )
