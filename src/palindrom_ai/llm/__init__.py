@@ -39,6 +39,13 @@ if TYPE_CHECKING:
         get_prompt,
         get_prompt_with_vars,
     )
+    from palindrom_ai.llm.rag import (
+        SearchResult,
+        VectorStore,
+        embed,
+        embed_single,
+        retrieve_and_generate,
+    )
 
 __all__ = [
     # Version
@@ -72,6 +79,12 @@ __all__ = [
     "get_settings",
     "configure",
     "LLMSettings",
+    # RAG
+    "VectorStore",
+    "SearchResult",
+    "embed",
+    "embed_single",
+    "retrieve_and_generate",
 ]
 
 
@@ -101,4 +114,14 @@ def __getattr__(name: str):
         from palindrom_ai.llm import prompts
 
         return getattr(prompts, name)
+    if name in (
+        "VectorStore",
+        "SearchResult",
+        "embed",
+        "embed_single",
+        "retrieve_and_generate",
+    ):
+        from palindrom_ai.llm import rag
+
+        return getattr(rag, name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
