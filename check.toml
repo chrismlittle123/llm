@@ -1,6 +1,8 @@
 # Check configuration for palindrom-ai-llm
-# Based on palindrom-ai/standards/rulesets/python-internal.toml
 # Moderate checks for internal tools and services
+
+[check-my-toolkit]
+ruleset = "python-internal"
 
 [code.linting.ruff]
 enabled = true

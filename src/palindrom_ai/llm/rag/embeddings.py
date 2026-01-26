@@ -9,6 +9,14 @@ import asyncio
 from collections import OrderedDict
 
 import litellm
+from pydantic import BaseModel
+
+
+class CacheStats(BaseModel):
+    """Statistics for the embedding cache."""
+
+    size: int
+    max_size: int
 
 # Simple async-compatible LRU cache for embeddings
 _embedding_cache: OrderedDict[tuple[str, str], list[float]] = OrderedDict()
@@ -66,18 +74,18 @@ def clear_embedding_cache() -> None:
     _embedding_cache.clear()
 
 
-def get_embedding_cache_stats() -> dict[str, int]:
+def get_embedding_cache_stats() -> CacheStats:
     """
     Get cache statistics.
 
     Returns:
-        Dict with 'size' and 'max_size' keys
+        CacheStats with size and max_size
 
     Example:
         >>> stats = get_embedding_cache_stats()
-        >>> print(f"Cache: {stats['size']}/{stats['max_size']}")
+        >>> print(f"Cache: {stats.size}/{stats.max_size}")
     """
-    return {"size": len(_embedding_cache), "max_size": _cache_max_size}
+    return CacheStats(size=len(_embedding_cache), max_size=_cache_max_size)
 
 
 async def embed(

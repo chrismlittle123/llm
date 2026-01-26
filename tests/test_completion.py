@@ -59,10 +59,9 @@ async def test_get_usage():
     )
 
     usage = get_usage(response)
-    assert "prompt_tokens" in usage
-    assert "completion_tokens" in usage
-    assert "total_tokens" in usage
-    assert usage["total_tokens"] == usage["prompt_tokens"] + usage["completion_tokens"]
+    assert usage.prompt_tokens > 0
+    assert usage.completion_tokens > 0
+    assert usage.total_tokens == usage.prompt_tokens + usage.completion_tokens
 
 
 @pytest.mark.asyncio

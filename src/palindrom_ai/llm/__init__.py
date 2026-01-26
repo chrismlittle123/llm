@@ -13,7 +13,14 @@ from typing import TYPE_CHECKING
 
 __version__ = "0.1.0"
 
-from palindrom_ai.llm.completion import RetryConfig, complete, get_cost, get_usage, stream
+from palindrom_ai.llm.completion import (
+    RetryConfig,
+    UsageStats,
+    complete,
+    get_cost,
+    get_usage,
+    stream,
+)
 from palindrom_ai.llm.config import (
     LLMSettings,
     configure,
@@ -47,6 +54,7 @@ if TYPE_CHECKING:
         get_prompt_with_vars,
     )
     from palindrom_ai.llm.rag import (
+        CacheStats,
         SearchResult,
         VectorStore,
         clear_embedding_cache,
@@ -66,6 +74,7 @@ __all__ = [
     "get_cost",
     "get_usage",
     "RetryConfig",
+    "UsageStats",
     # Structured output
     "extract",
     "extract_stream",
@@ -102,6 +111,7 @@ __all__ = [
     "clear_embedding_cache",
     "configure_embedding_cache",
     "get_embedding_cache_stats",
+    "CacheStats",
 ]
 
 
@@ -141,6 +151,7 @@ def __getattr__(name: str):
         "clear_embedding_cache",
         "configure_embedding_cache",
         "get_embedding_cache_stats",
+        "CacheStats",
     ):
         from palindrom_ai.llm import rag
 

@@ -27,6 +27,7 @@ Example:
 """
 
 from .embeddings import (
+    CacheStats,
     clear_embedding_cache,
     configure_embedding_cache,
     embed,
@@ -42,6 +43,7 @@ __all__ = [
     "clear_embedding_cache",
     "configure_embedding_cache",
     "get_embedding_cache_stats",
+    "CacheStats",
     "retrieve_and_generate",
     "SearchResult",
     "VectorStore",

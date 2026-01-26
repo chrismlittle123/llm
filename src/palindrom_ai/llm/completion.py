@@ -12,8 +12,17 @@ from typing import Any
 import litellm
 from litellm import ModelResponse
 from litellm import acompletion as litellm_acompletion
+from pydantic import BaseModel
 
 from palindrom_ai.llm.config import LLMSettings, get_settings
+
+
+class UsageStats(BaseModel):
+    """Token usage statistics from a completion response."""
+
+    prompt_tokens: int
+    completion_tokens: int
+    total_tokens: int
 
 
 @dataclass
@@ -158,7 +167,7 @@ def get_cost(response: ModelResponse) -> float:
     return litellm.completion_cost(response)
 
 
-def get_usage(response: ModelResponse) -> dict[str, int]:
+def get_usage(response: ModelResponse) -> UsageStats:
     """
     Get token usage from a completion response.
 
@@ -166,7 +175,7 @@ def get_usage(response: ModelResponse) -> dict[str, int]:
         response: The ModelResponse from a completion call
 
     Returns:
-        Dict with prompt_tokens, completion_tokens, total_tokens
+        UsageStats with prompt_tokens, completion_tokens, total_tokens
 
     Raises:
         ValueError: If usage information is not available in the response
@@ -174,12 +183,12 @@ def get_usage(response: ModelResponse) -> dict[str, int]:
     Example:
         >>> response = await complete(model="gpt-4o", messages=[...])
         >>> usage = get_usage(response)
-        >>> print(f"Total tokens: {usage['total_tokens']}")
+        >>> print(f"Total tokens: {usage.total_tokens}")
     """
     if response.usage is None:
         raise ValueError("Usage information not available in response")
-    return {
-        "prompt_tokens": response.usage.prompt_tokens,
-        "completion_tokens": response.usage.completion_tokens,
-        "total_tokens": response.usage.total_tokens,
-    }
+    return UsageStats(
+        prompt_tokens=response.usage.prompt_tokens,
+        completion_tokens=response.usage.completion_tokens,
+        total_tokens=response.usage.total_tokens,
+    )
