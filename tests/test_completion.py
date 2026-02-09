@@ -1,12 +1,8 @@
 """Tests for LLM completion functionality."""
 
 import pytest
-from dotenv import load_dotenv
 
 from palindrom_ai.llm import complete, get_cost, get_usage, stream
-
-# Load environment variables
-load_dotenv()
 
 
 @pytest.mark.asyncio
