@@ -2,19 +2,6 @@
 
 from dataclasses import dataclass
 
-from deepeval import evaluate as deepeval_evaluate
-from deepeval.metrics import (
-    AnswerRelevancyMetric,
-    BiasMetric,
-    ContextualPrecisionMetric,
-    ContextualRecallMetric,
-    ContextualRelevancyMetric,
-    FaithfulnessMetric,
-    HallucinationMetric,
-    ToxicityMetric,
-)
-from deepeval.test_case import LLMTestCase
-
 from .metrics import Metric
 
 
@@ -29,6 +16,17 @@ class EvalResult:
 
 def _get_metric_instance(metric: Metric, threshold: float = 0.7):
     """Convert Metric enum to DeepEval metric instance."""
+    from deepeval.metrics import (
+        AnswerRelevancyMetric,
+        BiasMetric,
+        ContextualPrecisionMetric,
+        ContextualRecallMetric,
+        ContextualRelevancyMetric,
+        FaithfulnessMetric,
+        HallucinationMetric,
+        ToxicityMetric,
+    )
+
     mapping = {
         Metric.ANSWER_RELEVANCY: AnswerRelevancyMetric(threshold=threshold),
         Metric.FAITHFULNESS: FaithfulnessMetric(threshold=threshold),
@@ -67,6 +65,9 @@ async def evaluate(
     if metrics is None:
         metrics = [Metric.ANSWER_RELEVANCY]
 
+    import deepeval
+    from deepeval.test_case import LLMTestCase
+
     test_case = LLMTestCase(
         input=input,
         actual_output=output,
@@ -77,7 +78,7 @@ async def evaluate(
     metric_instances = [_get_metric_instance(m, threshold) for m in metrics]
 
     # Run evaluation
-    results = deepeval_evaluate([test_case], metric_instances)
+    results = deepeval.evaluate([test_case], metric_instances)
 
     # Aggregate results
     scores: dict[str, float] = {}

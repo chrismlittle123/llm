@@ -67,7 +67,10 @@ class TestEvaluate:
         mock_eval_result.test_results = [mock_test_result]
 
         with patch(
-            "palindrom_ai.llm.eval.evaluate.deepeval_evaluate",
+            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+            return_value=MagicMock(),
+        ), patch(
+            "deepeval.evaluate",
             return_value=mock_eval_result,
         ):
             result = await evaluate(
@@ -97,7 +100,10 @@ class TestEvaluate:
         mock_eval_result.test_results = [mock_test_result]
 
         with patch(
-            "palindrom_ai.llm.eval.evaluate.deepeval_evaluate",
+            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+            return_value=MagicMock(),
+        ), patch(
+            "deepeval.evaluate",
             return_value=mock_eval_result,
         ):
             result = await evaluate(
@@ -125,7 +131,10 @@ class TestEvaluate:
         mock_eval_result.test_results = [mock_test_result]
 
         with patch(
-            "palindrom_ai.llm.eval.evaluate.deepeval_evaluate",
+            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+            return_value=MagicMock(),
+        ), patch(
+            "deepeval.evaluate",
             return_value=mock_eval_result,
         ):
             result = await evaluate(
@@ -153,7 +162,10 @@ class TestEvaluate:
         mock_eval_result.test_results = [mock_test_result]
 
         with patch(
-            "palindrom_ai.llm.eval.evaluate.deepeval_evaluate",
+            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+            return_value=MagicMock(),
+        ), patch(
+            "deepeval.evaluate",
             return_value=mock_eval_result,
         ) as mock_deepeval:
             await evaluate(
@@ -183,7 +195,10 @@ class TestRunEval:
         mock_eval_result.test_results = [mock_test_result]
 
         with patch(
-            "palindrom_ai.llm.eval.evaluate.deepeval_evaluate",
+            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+            return_value=MagicMock(),
+        ), patch(
+            "deepeval.evaluate",
             return_value=mock_eval_result,
         ):
             results = await run_eval(
@@ -224,7 +239,10 @@ class TestRunEval:
             return mock_eval_result
 
         with patch(
-            "palindrom_ai.llm.eval.evaluate.deepeval_evaluate",
+            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+            return_value=MagicMock(),
+        ), patch(
+            "deepeval.evaluate",
             side_effect=mock_deepeval,
         ):
             results = await run_eval(
@@ -271,7 +289,10 @@ class TestLlmTest:
         mock_eval_result.test_results = [mock_test_result]
 
         with patch(
-            "palindrom_ai.llm.eval.evaluate.deepeval_evaluate",
+            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+            return_value=MagicMock(),
+        ), patch(
+            "deepeval.evaluate",
             return_value=mock_eval_result,
         ):
             # Should not raise
@@ -296,7 +317,10 @@ class TestLlmTest:
         mock_eval_result.test_results = [mock_test_result]
 
         with patch(
-            "palindrom_ai.llm.eval.evaluate.deepeval_evaluate",
+            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+            return_value=MagicMock(),
+        ), patch(
+            "deepeval.evaluate",
             return_value=mock_eval_result,
         ):
             with pytest.raises(pytest.fail.Exception) as exc_info:
