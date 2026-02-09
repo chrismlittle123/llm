@@ -1,7 +1,7 @@
 """Tests for Langfuse observability integration."""
 
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -20,15 +20,19 @@ class TestInitObservability:
 
     def test_requires_public_key(self):
         """Test that init_observability requires LANGFUSE_PUBLIC_KEY."""
-        with patch.dict(os.environ, {}, clear=True):
-            with pytest.raises(ValueError, match="LANGFUSE_PUBLIC_KEY"):
-                init_observability()
+        with (
+            patch.dict(os.environ, {}, clear=True),
+            pytest.raises(ValueError, match="LANGFUSE_PUBLIC_KEY"),
+        ):
+            init_observability()
 
     def test_requires_secret_key(self):
         """Test that init_observability requires LANGFUSE_SECRET_KEY."""
-        with patch.dict(os.environ, {"LANGFUSE_PUBLIC_KEY": "pk-test"}, clear=True):
-            with pytest.raises(ValueError, match="LANGFUSE_SECRET_KEY"):
-                init_observability()
+        with (
+            patch.dict(os.environ, {"LANGFUSE_PUBLIC_KEY": "pk-test"}, clear=True),
+            pytest.raises(ValueError, match="LANGFUSE_SECRET_KEY"),
+        ):
+            init_observability()
 
     def test_configures_litellm_callbacks(self):
         """Test that init_observability configures LiteLLM callbacks."""

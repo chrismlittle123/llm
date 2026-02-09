@@ -11,7 +11,6 @@ from palindrom_ai.llm import (
     init_metrics_bridge,
     stop_metrics_bridge,
 )
-from palindrom_ai.llm.metrics import _bridge
 
 
 class TestMetricsBridge:
@@ -41,9 +40,11 @@ class TestMetricsBridge:
             langfuse_public_key=None,
             langfuse_secret_key=None,
         )
-        with patch("palindrom_ai.llm.metrics.get_settings", return_value=mock_settings):
-            with pytest.raises(ValueError, match="LANGFUSE_PUBLIC_KEY"):
-                bridge._setup_langfuse()
+        with (
+            patch("palindrom_ai.llm.metrics.get_settings", return_value=mock_settings),
+            pytest.raises(ValueError, match="LANGFUSE_PUBLIC_KEY"),
+        ):
+            bridge._setup_langfuse()
 
     def test_setup_langfuse_requires_secret_key(self):
         """Test that _setup_langfuse requires secret key."""
@@ -55,9 +56,11 @@ class TestMetricsBridge:
             langfuse_public_key="pk-test",
             langfuse_secret_key=None,
         )
-        with patch("palindrom_ai.llm.metrics.get_settings", return_value=mock_settings):
-            with pytest.raises(ValueError, match="LANGFUSE_SECRET_KEY"):
-                bridge._setup_langfuse()
+        with (
+            patch("palindrom_ai.llm.metrics.get_settings", return_value=mock_settings),
+            pytest.raises(ValueError, match="LANGFUSE_SECRET_KEY"),
+        ):
+            bridge._setup_langfuse()
 
     def test_parse_metrics_empty_data(self):
         """Test _parse_metrics with empty data."""
@@ -228,40 +231,31 @@ class TestCollectMetricsOnce:
     @pytest.mark.asyncio
     async def test_collect_metrics_once_lifecycle(self):
         """Test that collect_metrics_once sets up and tears down properly."""
-        mock_meter_provider = MagicMock()
-        mock_langfuse_client = MagicMock()
-
-        with patch.dict(
-            os.environ,
-            {
-                "LANGFUSE_PUBLIC_KEY": "pk-test",
-                "LANGFUSE_SECRET_KEY": "sk-test",
-            },
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "LANGFUSE_PUBLIC_KEY": "pk-test",
+                    "LANGFUSE_SECRET_KEY": "sk-test",
+                },
+            ),
+            patch("palindrom_ai.llm.metrics.MetricsBridge._setup_otel") as mock_setup_otel,
+            patch("palindrom_ai.llm.metrics.MetricsBridge._setup_langfuse") as mock_setup_langfuse,
+            patch("palindrom_ai.llm.metrics.MetricsBridge._collect_once") as mock_collect,
         ):
-            with (
-                patch(
-                    "palindrom_ai.llm.metrics.MetricsBridge._setup_otel"
-                ) as mock_setup_otel,
-                patch(
-                    "palindrom_ai.llm.metrics.MetricsBridge._setup_langfuse"
-                ) as mock_setup_langfuse,
-                patch(
-                    "palindrom_ai.llm.metrics.MetricsBridge._collect_once"
-                ) as mock_collect,
-            ):
-                # Reset settings cache for test
-                import palindrom_ai.llm.config
+            # Reset settings cache for test
+            import palindrom_ai.llm.config
 
-                old_settings = palindrom_ai.llm.config._settings
-                palindrom_ai.llm.config._settings = None
+            old_settings = palindrom_ai.llm.config._settings
+            palindrom_ai.llm.config._settings = None
 
-                try:
-                    await collect_metrics_once()
-                    mock_setup_langfuse.assert_called_once()
-                    mock_setup_otel.assert_called_once()
-                    mock_collect.assert_called_once()
-                finally:
-                    palindrom_ai.llm.config._settings = old_settings
+            try:
+                await collect_metrics_once()
+                mock_setup_langfuse.assert_called_once()
+                mock_setup_otel.assert_called_once()
+                mock_collect.assert_called_once()
+            finally:
+                palindrom_ai.llm.config._settings = old_settings
 
 
 class TestStopMetricsBridge:

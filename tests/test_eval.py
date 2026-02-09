@@ -66,12 +66,15 @@ class TestEvaluate:
         mock_eval_result = MagicMock()
         mock_eval_result.test_results = [mock_test_result]
 
-        with patch(
-            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
-            return_value=MagicMock(),
-        ), patch(
-            "deepeval.evaluate",
-            return_value=mock_eval_result,
+        with (
+            patch(
+                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                return_value=MagicMock(),
+            ),
+            patch(
+                "deepeval.evaluate",
+                return_value=mock_eval_result,
+            ),
         ):
             result = await evaluate(
                 input="What is the capital of France?",
@@ -99,12 +102,15 @@ class TestEvaluate:
         mock_eval_result = MagicMock()
         mock_eval_result.test_results = [mock_test_result]
 
-        with patch(
-            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
-            return_value=MagicMock(),
-        ), patch(
-            "deepeval.evaluate",
-            return_value=mock_eval_result,
+        with (
+            patch(
+                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                return_value=MagicMock(),
+            ),
+            patch(
+                "deepeval.evaluate",
+                return_value=mock_eval_result,
+            ),
         ):
             result = await evaluate(
                 input="What is the capital of France?",
@@ -130,12 +136,15 @@ class TestEvaluate:
         mock_eval_result = MagicMock()
         mock_eval_result.test_results = [mock_test_result]
 
-        with patch(
-            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
-            return_value=MagicMock(),
-        ), patch(
-            "deepeval.evaluate",
-            return_value=mock_eval_result,
+        with (
+            patch(
+                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                return_value=MagicMock(),
+            ),
+            patch(
+                "deepeval.evaluate",
+                return_value=mock_eval_result,
+            ),
         ):
             result = await evaluate(
                 input="What is the capital of France?",
@@ -161,13 +170,16 @@ class TestEvaluate:
         mock_eval_result = MagicMock()
         mock_eval_result.test_results = [mock_test_result]
 
-        with patch(
-            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
-            return_value=MagicMock(),
-        ), patch(
-            "deepeval.evaluate",
-            return_value=mock_eval_result,
-        ) as mock_deepeval:
+        with (
+            patch(
+                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                return_value=MagicMock(),
+            ),
+            patch(
+                "deepeval.evaluate",
+                return_value=mock_eval_result,
+            ) as mock_deepeval,
+        ):
             await evaluate(
                 input="test",
                 output="test response",
@@ -194,12 +206,15 @@ class TestRunEval:
         mock_eval_result = MagicMock()
         mock_eval_result.test_results = [mock_test_result]
 
-        with patch(
-            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
-            return_value=MagicMock(),
-        ), patch(
-            "deepeval.evaluate",
-            return_value=mock_eval_result,
+        with (
+            patch(
+                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                return_value=MagicMock(),
+            ),
+            patch(
+                "deepeval.evaluate",
+                return_value=mock_eval_result,
+            ),
         ):
             results = await run_eval(
                 test_cases=[
@@ -238,12 +253,15 @@ class TestRunEval:
             mock_eval_result.test_results = [mock_test_result]
             return mock_eval_result
 
-        with patch(
-            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
-            return_value=MagicMock(),
-        ), patch(
-            "deepeval.evaluate",
-            side_effect=mock_deepeval,
+        with (
+            patch(
+                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                return_value=MagicMock(),
+            ),
+            patch(
+                "deepeval.evaluate",
+                side_effect=mock_deepeval,
+            ),
         ):
             results = await run_eval(
                 test_cases=[
@@ -288,12 +306,15 @@ class TestLlmTest:
         mock_eval_result = MagicMock()
         mock_eval_result.test_results = [mock_test_result]
 
-        with patch(
-            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
-            return_value=MagicMock(),
-        ), patch(
-            "deepeval.evaluate",
-            return_value=mock_eval_result,
+        with (
+            patch(
+                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                return_value=MagicMock(),
+            ),
+            patch(
+                "deepeval.evaluate",
+                return_value=mock_eval_result,
+            ),
         ):
             # Should not raise
             llm_test(
@@ -316,19 +337,22 @@ class TestLlmTest:
         mock_eval_result = MagicMock()
         mock_eval_result.test_results = [mock_test_result]
 
-        with patch(
-            "palindrom_ai.llm.eval.evaluate._get_metric_instance",
-            return_value=MagicMock(),
-        ), patch(
-            "deepeval.evaluate",
-            return_value=mock_eval_result,
+        with (
+            patch(
+                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                return_value=MagicMock(),
+            ),
+            patch(
+                "deepeval.evaluate",
+                return_value=mock_eval_result,
+            ),
+            pytest.raises(pytest.fail.Exception) as exc_info,
         ):
-            with pytest.raises(pytest.fail.Exception) as exc_info:
-                llm_test(
-                    input="What is 2+2?",
-                    output="banana",
-                    expected="4",
-                    metrics=[Metric.ANSWER_RELEVANCY],
-                )
+            llm_test(
+                input="What is 2+2?",
+                output="banana",
+                expected="4",
+                metrics=[Metric.ANSWER_RELEVANCY],
+            )
 
         assert "LLM evaluation failed" in str(exc_info.value)

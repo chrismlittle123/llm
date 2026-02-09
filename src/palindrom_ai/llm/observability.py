@@ -69,10 +69,7 @@ def trace(
     metadata: dict | None = None,
     user_id: str | None = None,
     session_id: str | None = None,
-) -> (
-    Callable[P, Awaitable[R]]
-    | Callable[[Callable[P, Awaitable[R]]], Callable[P, Awaitable[R]]]
-):
+) -> Callable[P, Awaitable[R]] | Callable[[Callable[P, Awaitable[R]]], Callable[P, Awaitable[R]]]:
     """
     Decorator to create a trace context for LLM operations.
 

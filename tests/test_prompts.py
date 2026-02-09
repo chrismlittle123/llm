@@ -2,10 +2,8 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
-from palindrom_ai.llm import get_chat_prompt, get_langfuse, get_prompt, get_prompt_with_vars
 import palindrom_ai.llm.prompts as prompts_module
+from palindrom_ai.llm import get_chat_prompt, get_langfuse, get_prompt, get_prompt_with_vars
 
 
 class TestGetLangfuse:

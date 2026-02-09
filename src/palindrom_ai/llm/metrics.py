@@ -240,27 +240,23 @@ class MetricsBridge:
             # Update token counts
             if "inputTokens" in day_metrics:
                 self._metric_values["input_tokens"][model] = (
-                    self._metric_values["input_tokens"].get(model, 0)
-                    + day_metrics["inputTokens"]
+                    self._metric_values["input_tokens"].get(model, 0) + day_metrics["inputTokens"]
                 )
             if "outputTokens" in day_metrics:
                 self._metric_values["output_tokens"][model] = (
-                    self._metric_values["output_tokens"].get(model, 0)
-                    + day_metrics["outputTokens"]
+                    self._metric_values["output_tokens"].get(model, 0) + day_metrics["outputTokens"]
                 )
 
             # Update cost
             if "totalCost" in day_metrics:
                 self._metric_values["total_cost"][model] = (
-                    self._metric_values["total_cost"].get(model, 0)
-                    + day_metrics["totalCost"]
+                    self._metric_values["total_cost"].get(model, 0) + day_metrics["totalCost"]
                 )
 
             # Update request count
             if "countTraces" in day_metrics:
                 self._metric_values["request_count"][model] = (
-                    self._metric_values["request_count"].get(model, 0)
-                    + day_metrics["countTraces"]
+                    self._metric_values["request_count"].get(model, 0) + day_metrics["countTraces"]
                 )
             elif "countObservations" in day_metrics:
                 self._metric_values["request_count"][model] = (

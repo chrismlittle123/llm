@@ -1,7 +1,6 @@
 """Comprehensive tests for VectorStore component."""
 
 import tempfile
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -162,7 +161,9 @@ class TestVectorStoreAdd:
         """Test add uses the configured embedding model."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]) as mock_embed:
+        with patch(
+            "palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]
+        ) as mock_embed:
             store = VectorStore(
                 collection_name="test_embed_model",
                 embedding_model="custom-model",

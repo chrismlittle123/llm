@@ -25,7 +25,10 @@ class TestEmbed:
             {"embedding": [0.4, 0.5, 0.6]},
         ]
 
-        with patch("palindrom_ai.llm.rag.embeddings.litellm.aembedding", return_value=mock_response):
+        with patch(
+            "palindrom_ai.llm.rag.embeddings.litellm.aembedding",
+            return_value=mock_response,
+        ):
             embeddings = await embed(["hello", "world"])
 
         assert len(embeddings) == 2
@@ -38,7 +41,10 @@ class TestEmbed:
         mock_response = MagicMock()
         mock_response.data = [{"embedding": [0.1, 0.2, 0.3]}]
 
-        with patch("palindrom_ai.llm.rag.embeddings.litellm.aembedding", return_value=mock_response):
+        with patch(
+            "palindrom_ai.llm.rag.embeddings.litellm.aembedding",
+            return_value=mock_response,
+        ):
             embedding = await embed_single("hello")
 
         assert embedding == [0.1, 0.2, 0.3]

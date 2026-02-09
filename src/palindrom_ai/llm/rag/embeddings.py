@@ -18,6 +18,7 @@ class CacheStats(BaseModel):
     size: int
     max_size: int
 
+
 # Simple async-compatible LRU cache for embeddings
 _embedding_cache: OrderedDict[tuple[str, str], list[float]] = OrderedDict()
 _cache_lock = asyncio.Lock()
