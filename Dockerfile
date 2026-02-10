@@ -6,11 +6,11 @@ WORKDIR /app
 
 # Install dependencies first (cached layer)
 COPY pyproject.toml uv.lock README.md ./
-RUN uv sync --frozen --extra server --no-install-project
+RUN uv sync --frozen --extra server --extra secrets --no-install-project
 
 # Copy application source
 COPY src/ src/
-RUN uv sync --frozen --extra server
+RUN uv sync --frozen --extra server --extra secrets
 
 EXPOSE 8000
 

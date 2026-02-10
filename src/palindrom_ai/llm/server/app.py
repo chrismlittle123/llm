@@ -16,9 +16,33 @@ from palindrom_ai.llm.server.routes import router
 logger = logging.getLogger(__name__)
 
 
+def _resolve_secrets() -> None:
+    """Resolve *_SECRET_NAME env vars from GCP Secret Manager into actual values."""
+    secret_name_vars = {k: v for k, v in os.environ.items() if k.endswith("_SECRET_NAME")}
+    if not secret_name_vars:
+        return
+    try:
+        from google.cloud import secretmanager  # ty: ignore[import-not-found]
+
+        client = secretmanager.SecretManagerServiceClient()
+        for env_var, secret_resource in secret_name_vars.items():
+            target_var = env_var.removesuffix("_SECRET_NAME")
+            if os.environ.get(target_var):
+                continue  # Already set directly, don't override
+            try:
+                response = client.access_secret_version(name=f"{secret_resource}/versions/latest")
+                os.environ[target_var] = response.payload.data.decode("utf-8")
+                logger.info("Resolved secret %s -> %s", env_var, target_var)
+            except Exception as exc:
+                logger.warning("Failed to resolve secret %s: %s", env_var, exc)
+    except ImportError:
+        logger.warning("google-cloud-secret-manager not installed, skipping secret resolution")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Startup: init observability (best-effort). Shutdown: flush traces."""
+    """Startup: resolve secrets, init observability. Shutdown: flush traces."""
+    _resolve_secrets()
     try:
         from palindrom_ai.llm.observability import init_observability
 
