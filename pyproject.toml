@@ -67,6 +67,8 @@ include = ["src"]
 [tool.ty.rules]
 # litellm uses Pydantic extra='allow' for dynamic fields like 'usage'
 unresolved-attribute = "warn"
+# Suppress unused-ignore-comment across ty versions (CI vs local may differ)
+unused-ignore-comment = "ignore"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

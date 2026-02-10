@@ -146,7 +146,7 @@ class VectorStore:
                         id=results["ids"][0][i],
                         document=results["documents"][0][i] if results["documents"] else "",
                         score=1 - results["distances"][0][i],  # ty: ignore[not-subscriptable]
-                        metadata=results["metadatas"][0][i] if results["metadatas"] else {},
+                        metadata=results["metadatas"][0][i] if results["metadatas"] else {},  # ty: ignore[invalid-argument-type]
                     )
                 )
 
