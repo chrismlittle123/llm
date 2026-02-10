@@ -1,0 +1,19 @@
+{
+  "name": "@palindrom-ai/llm-client",
+  "version": "0.1.0",
+  "description": "TypeScript client for the Palindrom AI LLM Gateway",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "generate": "openapi-ts --input ../openapi.json --output src/generated --client @hey-api/client-fetch",
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@hey-api/client-fetch": "^0.8.0"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.64.0",
+    "typescript": "^5.0.0"
+  }
+}

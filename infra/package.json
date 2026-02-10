@@ -1,0 +1,16 @@
+{
+  "name": "llm-gateway-infra",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@pulumi/gcp": "^8.0.0",
+    "@pulumi/pulumi": "^3.0.0",
+    "@palindrom-ai/infra": "github:chrismlittle123/infra"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

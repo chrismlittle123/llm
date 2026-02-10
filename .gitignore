@@ -58,3 +58,6 @@ Thumbs.db
 
 # ChromaDB local storage
 chroma_data/
+
+# Node.js (infra/ and client/ directories)
+node_modules/
