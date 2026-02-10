@@ -1,3 +1,4 @@
 config:
-  gcp:project: christopher-little-dev
+  gcp:project: ${GOOGLE_PROJECT}
   gcp:region: europe-west2
+  llm-gateway:environment: dev
