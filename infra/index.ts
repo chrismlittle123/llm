@@ -67,7 +67,7 @@ const llmGateway = createContainer("api", {
   image: "gcr.io/cloudrun/hello", // Placeholder — updated after first push
   port: 8000,
   size: "medium",
-  minInstances: 1,
+  minInstances: 0,
   maxInstances: 5,
   environment: {
     SERVICE_NAME: "llm-gateway",
