@@ -14,7 +14,7 @@ const langfuseSecretKey = createSecret("langfuse-secret-key", { config });
 
 const llmGateway = createContainer("llm-gateway", {
   config,
-  image: "europe-west2-docker.pkg.dev/christopher-little-dev/llm-gateway/llm-gateway:latest",
+  image: `europe-west2-docker.pkg.dev/christopher-little-dev/llm-gateway/llm-gateway:${process.env.IMAGE_TAG || "latest"}`,
   port: 8000,
   size: "medium",
   minInstances: 1,
