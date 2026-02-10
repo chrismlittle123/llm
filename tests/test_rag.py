@@ -188,8 +188,9 @@ class TestRetrieveAndGenerate:
         )
 
         mock_response = MagicMock()
-        mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = "The capital of France is Paris."
+        mock_response.model_dump.return_value = {
+            "choices": [{"message": {"content": "The capital of France is Paris."}}],
+        }
 
         with patch("palindrom_ai.llm.rag.generate.complete", return_value=mock_response):
             answer = await retrieve_and_generate(
@@ -208,8 +209,9 @@ class TestRetrieveAndGenerate:
         mock_store.search = AsyncMock(return_value=[])
 
         mock_response = MagicMock()
-        mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = "Custom response"
+        mock_response.model_dump.return_value = {
+            "choices": [{"message": {"content": "Custom response"}}],
+        }
 
         with patch(
             "palindrom_ai.llm.rag.generate.complete", return_value=mock_response
@@ -232,8 +234,9 @@ class TestRetrieveAndGenerate:
         mock_store.search = AsyncMock(return_value=[])
 
         mock_response = MagicMock()
-        mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = "response"
+        mock_response.model_dump.return_value = {
+            "choices": [{"message": {"content": "response"}}],
+        }
 
         with patch("palindrom_ai.llm.rag.generate.complete", return_value=mock_response):
             await retrieve_and_generate(

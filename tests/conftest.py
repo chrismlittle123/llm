@@ -5,11 +5,15 @@ import warnings
 
 import pytest
 
-GCP_PROJECT = "christopher-little-dev"
+GCP_PROJECT = os.environ.get("GCP_PROJECT", "christopher-little-dev")
 
 SECRET_MAP = {
-    "OPENAI_API_KEY": "livekit-agent-openai-api-key-secret-dev",
-    "ANTHROPIC_API_KEY": "christopher-little-dev-anthropic-api-key-secret-dev",
+    "OPENAI_API_KEY": os.environ.get(
+        "OPENAI_SECRET_NAME", "livekit-agent-openai-api-key-secret-dev"
+    ),
+    "ANTHROPIC_API_KEY": os.environ.get(
+        "ANTHROPIC_SECRET_NAME", "christopher-little-dev-anthropic-api-key-secret-dev"
+    ),
 }
 
 

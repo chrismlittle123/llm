@@ -1,15 +1,18 @@
 """FastAPI HTTP gateway for the Palindrom AI LLM SDK."""
 
+import importlib
 import logging
 import os
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from typing import Any, cast
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from palindrom_ai.llm.server.routes import router
 
@@ -22,8 +25,7 @@ def _resolve_secrets() -> None:
     if not secret_name_vars:
         return
     try:
-        from google.cloud import secretmanager  # ty: ignore[import-not-found]
-
+        secretmanager = importlib.import_module("google.cloud.secretmanager")
         client = secretmanager.SecretManagerServiceClient()
         for env_var, secret_resource in secret_name_vars.items():
             target_var = env_var.removesuffix("_SECRET_NAME")
@@ -63,8 +65,10 @@ app = FastAPI(title="Palindrom AI LLM Gateway", lifespan=lifespan)
 
 # --- CORS ---
 cors_origins = os.getenv("LLM_CORS_ORIGINS", "*").split(",")
+# cast() needed because ty cannot match Starlette middleware classes to the
+# _MiddlewareFactory[P] ParamSpec protocol used by add_middleware.
 app.add_middleware(
-    CORSMiddleware,  # ty: ignore[invalid-argument-type]
+    cast(Any, CORSMiddleware),
     allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
@@ -74,10 +78,10 @@ app.add_middleware(
 
 # --- Request ID middleware (raw ASGI for performance) ---
 class RequestIDMiddleware:
-    def __init__(self, app):  # ty: ignore[unresolved-attribute]
+    def __init__(self, app: ASGIApp) -> None:
         self.app = app
 
-    async def __call__(self, scope, receive, send):  # ty: ignore[unresolved-attribute]
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
@@ -85,7 +89,7 @@ class RequestIDMiddleware:
         request_id = str(uuid.uuid4())
         scope.setdefault("state", {})["request_id"] = request_id
 
-        async def send_with_request_id(message):
+        async def send_with_request_id(message: Any) -> None:
             if message["type"] == "http.response.start":
                 headers = list(message.get("headers", []))
                 headers.append((b"x-request-id", request_id.encode()))
@@ -95,7 +99,7 @@ class RequestIDMiddleware:
         await self.app(scope, receive, send_with_request_id)
 
 
-app.add_middleware(RequestIDMiddleware)  # ty: ignore[invalid-argument-type]
+app.add_middleware(cast(Any, RequestIDMiddleware))
 
 
 # --- Exception handlers ---

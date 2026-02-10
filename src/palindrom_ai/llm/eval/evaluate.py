@@ -65,7 +65,7 @@ async def evaluate(
     if metrics is None:
         metrics = [Metric.ANSWER_RELEVANCY]
 
-    import deepeval
+    from deepeval.evaluate import evaluate as deepeval_evaluate
     from deepeval.test_case import LLMTestCase
 
     test_case = LLMTestCase(
@@ -78,17 +78,19 @@ async def evaluate(
     metric_instances = [_get_metric_instance(m, threshold) for m in metrics]
 
     # Run evaluation
-    results = deepeval.evaluate([test_case], metric_instances)  # ty: ignore[possibly-missing-attribute]
+    results = deepeval_evaluate([test_case], metric_instances)
 
     # Aggregate results
     scores: dict[str, float] = {}
     details: dict[str, str] = {}
     all_passed = True
 
-    for metric_result in results.test_results[0].metrics_data:
-        scores[metric_result.name] = metric_result.score
+    metrics_data = results.test_results[0].metrics_data or []
+    for metric_result in metrics_data:
+        score = metric_result.score if metric_result.score is not None else 0.0
+        scores[metric_result.name] = score
         details[metric_result.name] = metric_result.reason or ""
-        if metric_result.score < threshold:
+        if score < threshold:
             all_passed = False
 
     return EvalResult(

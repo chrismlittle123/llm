@@ -9,8 +9,10 @@ to the underlying ChromaDB client or collection is exposed.
 """
 
 from dataclasses import dataclass
+from typing import cast
 
 import chromadb
+from chromadb.api.types import Embedding, Metadata
 
 from .embeddings import embed, embed_single
 
@@ -81,7 +83,7 @@ class VectorStore:
         self,
         documents: list[str],
         ids: list[str],
-        metadata: list[dict] | None = None,
+        metadata: list[dict[str, str | int | float | bool]] | None = None,
     ) -> None:
         """
         Add documents to the store.
@@ -98,13 +100,20 @@ class VectorStore:
             ...     metadata=[{"source": "file1"}, {"source": "file2"}],
             ... )
         """
-        embeddings = await embed(documents, model=self.embedding_model)
+        raw_embeddings = await embed(documents, model=self.embedding_model)
+        # Cast to chromadb's Embedding type — list[list[float]] is compatible
+        # with list[Sequence[float]], but list invariance prevents direct assignment.
+        embeddings = cast(list[Embedding], raw_embeddings)
+
+        # Cast to chromadb's Metadata type — our dict values are compatible but
+        # chromadb's Metadata union includes SparseVector which widens the type.
+        metadatas = cast(list[Metadata], metadata) if metadata is not None else None
 
         self.__collection.add(
             documents=documents,
-            embeddings=embeddings,  # ty: ignore[invalid-argument-type]
+            embeddings=embeddings,
             ids=ids,
-            metadatas=metadata,  # ty: ignore[invalid-argument-type]
+            metadatas=metadatas,
         )
 
     async def search(
@@ -140,13 +149,18 @@ class VectorStore:
 
         search_results = []
         if results["ids"] and results["ids"][0]:
+            distances = results["distances"]
+            metadatas = results["metadatas"]
+            documents = results["documents"]
             for i in range(len(results["ids"][0])):
+                score = (1 - distances[0][i]) if distances else 0.0
+                meta_item = metadatas[0][i] if metadatas else None
                 search_results.append(
                     SearchResult(
                         id=results["ids"][0][i],
-                        document=results["documents"][0][i] if results["documents"] else "",
-                        score=1 - results["distances"][0][i],  # ty: ignore[not-subscriptable]
-                        metadata=results["metadatas"][0][i] if results["metadatas"] else {},  # ty: ignore[invalid-argument-type]
+                        document=documents[0][i] if documents else "",
+                        score=score,
+                        metadata=dict(meta_item) if meta_item is not None else {},
                     )
                 )
 

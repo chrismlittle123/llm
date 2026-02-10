@@ -12,6 +12,10 @@ RUN uv sync --frozen --extra server --extra secrets --no-install-project
 COPY src/ src/
 RUN uv sync --frozen --extra server --extra secrets
 
+# Run as non-root user for security
+RUN useradd --create-home appuser
+USER appuser
+
 EXPOSE 8000
 
 ENTRYPOINT ["uv", "run", "uvicorn", "palindrom_ai.llm.server.app:app", "--host", "0.0.0.0", "--port", "8000"]

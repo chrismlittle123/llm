@@ -65,7 +65,11 @@ async def retrieve_and_generate(
         ],
     )
 
-    return response.choices[0].message.content or ""  # ty: ignore[possibly-missing-attribute]
+    # Access via model_dump() — litellm's Choices | StreamingChoices union
+    # means ty cannot prove .message always exists on the choice variant.
+    data = response.model_dump()
+    choices = data.get("choices", [])
+    return choices[0]["message"]["content"] or "" if choices else ""
 
 
 def _format_context(results: list[SearchResult]) -> str:

@@ -72,10 +72,10 @@ python-version = "3.13"
 include = ["src"]
 
 [tool.ty.rules]
-# litellm uses Pydantic extra='allow' for dynamic fields like 'usage'
+# litellm uses Pydantic extra='allow' which ty cannot resolve for attribute access.
+# These are accessed via model_dump() where possible, but some warnings remain
+# from chromadb and opentelemetry type resolution.
 unresolved-attribute = "warn"
-# Suppress unused-ignore-comment across ty versions (CI vs local may differ)
-unused-ignore-comment = "ignore"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

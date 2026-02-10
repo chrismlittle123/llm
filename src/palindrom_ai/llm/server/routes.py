@@ -3,7 +3,7 @@
 from typing import Any
 
 from fastapi import APIRouter, Request
-from pydantic import create_model
+from pydantic import BaseModel, create_model
 
 from palindrom_ai.llm.completion import complete
 from palindrom_ai.llm.server.models import (
@@ -53,17 +53,17 @@ def _resolve_type(prop: dict[str, Any]) -> type:
         nested_props = prop.get("properties", {})
         nested_required = prop.get("required", [])
         nested_fields = _json_schema_to_fields(nested_props, nested_required)
-        return create_model("NestedModel", **nested_fields)  # type: ignore[call-overload]
+        return create_model("NestedModel", **nested_fields)
 
     return _JSON_SCHEMA_TYPES.get(schema_type, str)
 
 
-def _build_response_model(schema: dict[str, Any]) -> type:
+def _build_response_model(schema: dict[str, Any]) -> type[BaseModel]:
     """Build a dynamic Pydantic model from a JSON Schema dict."""
     properties = schema.get("properties", {})
     required = schema.get("required", [])
     fields = _json_schema_to_fields(properties, required)
-    return create_model("DynamicResponseModel", **fields)  # type: ignore[call-overload]
+    return create_model("DynamicResponseModel", **fields)
 
 
 @router.get("/health")
@@ -80,13 +80,18 @@ async def complete_endpoint(body: CompletionRequest) -> CompletionResponse:
         max_retries=body.max_retries,
         timeout=body.timeout,
     )
-    content = response.choices[0].message.content or ""  # ty: ignore[possibly-missing-attribute]
+    # Access via model_dump() — litellm's ModelResponse uses Pydantic extra='allow'
+    # which ty cannot resolve for direct attribute access.
+    data = response.model_dump()
+    choices = data.get("choices", [])
+    content = choices[0]["message"]["content"] or "" if choices else ""
     usage = {}
-    if response.usage:  # ty: ignore[unresolved-attribute]
+    usage_data = data.get("usage")
+    if usage_data:
         usage = {
-            "prompt_tokens": response.usage.prompt_tokens,  # ty: ignore[unresolved-attribute]
-            "completion_tokens": response.usage.completion_tokens,  # ty: ignore[unresolved-attribute]
-            "total_tokens": response.usage.total_tokens,  # ty: ignore[unresolved-attribute]
+            "prompt_tokens": usage_data["prompt_tokens"],
+            "completion_tokens": usage_data["completion_tokens"],
+            "total_tokens": usage_data["total_tokens"],
         }
     return CompletionResponse(content=content, usage=usage)
 
@@ -95,7 +100,7 @@ async def complete_endpoint(body: CompletionRequest) -> CompletionResponse:
 async def extract_endpoint(body: ExtractionRequest, request: Request) -> ExtractionResponse:
     response_model = _build_response_model(body.response_schema)
     result = await extract(
-        response_model=response_model,  # ty: ignore[invalid-argument-type]
+        response_model=response_model,
         model=body.model,
         messages=body.messages,
         prompt=body.prompt,

@@ -32,17 +32,15 @@ def test_health_has_request_id():
 
 def _mock_model_response(content: str = "Hello!") -> MagicMock:
     """Build a fake ModelResponse-like object."""
-    choice = MagicMock()
-    choice.message.content = content
-
-    usage = MagicMock()
-    usage.prompt_tokens = 10
-    usage.completion_tokens = 5
-    usage.total_tokens = 15
-
     resp = MagicMock()
-    resp.choices = [choice]
-    resp.usage = usage
+    resp.model_dump.return_value = {
+        "choices": [{"message": {"content": content}}],
+        "usage": {
+            "prompt_tokens": 10,
+            "completion_tokens": 5,
+            "total_tokens": 15,
+        },
+    }
     return resp
 
 

@@ -17,7 +17,9 @@ from typing import TYPE_CHECKING
 from palindrom_ai.llm.config import LLMSettings, get_settings
 
 if TYPE_CHECKING:
-    from opentelemetry.metrics import Meter, MeterProvider
+    import httpx
+    from opentelemetry.metrics import Meter
+    from opentelemetry.sdk.metrics import MeterProvider as SdkMeterProvider
 
 logger = logging.getLogger(__name__)
 
@@ -55,8 +57,8 @@ class MetricsBridge:
         self._task: asyncio.Task | None = None
         self._running = False
         self._meter: Meter | None = None
-        self._meter_provider: MeterProvider | None = None
-        self._langfuse_client: object | None = None
+        self._meter_provider: SdkMeterProvider | None = None
+        self._langfuse_client: httpx.Client | None = None
 
         # Latest metric values (updated by polling)
         self._metric_values: dict[str, dict[str, float]] = {}
@@ -205,14 +207,14 @@ class MetricsBridge:
         try:
             # Run blocking HTTP call in thread pool
             response = await asyncio.to_thread(
-                self._langfuse_client.get,  # type: ignore[union-attr]
+                self._langfuse_client.get,
                 "/api/public/metrics/daily",
                 params=params,
             )
             response.raise_for_status()
             return response.json()
-        except Exception as e:
-            logger.warning(f"Failed to fetch Langfuse metrics: {e}")
+        except Exception:
+            logger.exception("Failed to fetch Langfuse metrics")
             return {}
 
     def _parse_metrics(self, data: dict) -> None:
@@ -321,12 +323,12 @@ class MetricsBridge:
 
         # Shutdown meter provider
         if self._meter_provider is not None:
-            self._meter_provider.shutdown()  # ty: ignore[unresolved-attribute]
+            self._meter_provider.shutdown()
             self._meter_provider = None
 
         # Close Langfuse HTTP client
         if self._langfuse_client is not None:
-            self._langfuse_client.close()  # type: ignore[union-attr]
+            self._langfuse_client.close()
             self._langfuse_client = None
 
         logger.info("Metrics bridge stopped")
@@ -415,13 +417,13 @@ async def collect_metrics_once() -> None:
         await bridge._collect_once()
         # Force a metric export
         if bridge._meter_provider is not None:
-            bridge._meter_provider.force_flush()  # ty: ignore[unresolved-attribute]
+            bridge._meter_provider.force_flush()
     finally:
         # Cleanup
         if bridge._meter_provider is not None:
-            bridge._meter_provider.shutdown()  # ty: ignore[unresolved-attribute]
+            bridge._meter_provider.shutdown()
         if bridge._langfuse_client is not None:
-            bridge._langfuse_client.close()  # type: ignore[union-attr]
+            bridge._langfuse_client.close()
 
 
 async def stop_metrics_bridge() -> None:
