@@ -66,20 +66,18 @@ print(user.name)  # "John"
 
 ### HTTP Gateway
 
-Start the server:
+The gateway is deployed on GCP Cloud Run:
 
-```bash
-uvicorn palindrom_ai.llm.server.app:app --port 8000
 ```
-
-Call from any language:
+https://llm-gateway-api-container-dev-10492061315.europe-west2.run.app
+```
 
 ```bash
 # Health check
-curl http://localhost:8000/health
+curl https://llm-gateway-api-container-dev-10492061315.europe-west2.run.app/health
 
 # Completion
-curl -X POST http://localhost:8000/v1/complete \
+curl -X POST https://llm-gateway-api-container-dev-10492061315.europe-west2.run.app/v1/complete \
   -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-4o",
@@ -87,7 +85,7 @@ curl -X POST http://localhost:8000/v1/complete \
   }'
 
 # Structured extraction
-curl -X POST http://localhost:8000/v1/extract \
+curl -X POST https://llm-gateway-api-container-dev-10492061315.europe-west2.run.app/v1/extract \
   -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-4o",
@@ -100,6 +98,52 @@ curl -X POST http://localhost:8000/v1/extract \
       "required": ["name", "age"]
     }
   }'
+```
+
+### TypeScript Client
+
+Install the client in any TypeScript/JavaScript project:
+
+```bash
+pnpm add @palindrom-ai/llm-client
+```
+
+```typescript
+import { LLMClient } from "@palindrom-ai/llm-client";
+
+const client = new LLMClient({
+  baseUrl: "https://llm-gateway-api-container-dev-10492061315.europe-west2.run.app",
+});
+
+// Completion
+const completion = await client.complete({
+  model: "gpt-4o",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+console.log(completion.content);
+
+// Structured extraction
+const extraction = await client.extract({
+  model: "gpt-4o",
+  prompt: "John is 25 years old",
+  response_schema: {
+    properties: {
+      name: { type: "string" },
+      age: { type: "integer" },
+    },
+    required: ["name", "age"],
+  },
+});
+console.log(extraction.data); // { name: "John", age: 25 }
+
+// Health check
+const health = await client.health();
+```
+
+To regenerate the client after API changes:
+
+```bash
+cd client && pnpm run generate && pnpm run build
 ```
 
 ## HTTP Gateway
@@ -173,11 +217,11 @@ Observability is best-effort: if Langfuse env vars are not set, the server start
 
 ### Interactive API Docs
 
-When the server is running, interactive documentation is available at:
+Interactive documentation is available at:
 
-- **Swagger UI**: `http://localhost:8000/docs`
-- **ReDoc**: `http://localhost:8000/redoc`
-- **OpenAPI JSON**: `http://localhost:8000/openapi.json`
+- **Swagger UI**: https://llm-gateway-api-container-dev-10492061315.europe-west2.run.app/docs
+- **ReDoc**: https://llm-gateway-api-container-dev-10492061315.europe-west2.run.app/redoc
+- **OpenAPI JSON**: https://llm-gateway-api-container-dev-10492061315.europe-west2.run.app/openapi.json
 
 ### Middleware
 
@@ -189,6 +233,39 @@ Every response includes an `X-Request-ID` header for tracing. Error responses re
   "detail": "description of the error",
   "request_id": "uuid"
 }
+```
+
+## Docker
+
+Run locally with Docker Compose:
+
+```bash
+docker compose up
+curl http://localhost:8000/health
+```
+
+Or build and run directly:
+
+```bash
+docker build -t llm-gateway .
+docker run --env-file .env -p 8000:8000 llm-gateway
+```
+
+## Deployment
+
+The gateway is deployed to GCP Cloud Run via GitHub Actions. Pushing to `main` triggers a full pipeline:
+
+1. **Test** — lint, format check, unit tests
+2. **Deploy Infrastructure** — Pulumi creates Artifact Registry, Secret Manager secrets, and Cloud Run service
+3. **Build and Push** — Docker image pushed to Artifact Registry
+4. **Update Service** — Cloud Run updated to the new image
+
+Infrastructure is defined in `infra/` using Pulumi with the `@palindrom-ai/infra` package.
+
+To deploy manually:
+
+```bash
+cd infra && npm install && pulumi up
 ```
 
 ## Documentation
