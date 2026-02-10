@@ -13,7 +13,7 @@ COPY src/ src/
 RUN uv sync --frozen --extra server --extra secrets
 
 # Run as non-root user for security
-RUN useradd --create-home appuser
+RUN useradd --create-home appuser && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 8000
