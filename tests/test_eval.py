@@ -72,7 +72,7 @@ class TestEvaluate:
                 return_value=MagicMock(),
             ),
             patch(
-                "deepeval.evaluate",
+                "deepeval.evaluate.evaluate",
                 return_value=mock_eval_result,
             ),
         ):
@@ -108,7 +108,7 @@ class TestEvaluate:
                 return_value=MagicMock(),
             ),
             patch(
-                "deepeval.evaluate",
+                "deepeval.evaluate.evaluate",
                 return_value=mock_eval_result,
             ),
         ):
@@ -142,7 +142,7 @@ class TestEvaluate:
                 return_value=MagicMock(),
             ),
             patch(
-                "deepeval.evaluate",
+                "deepeval.evaluate.evaluate",
                 return_value=mock_eval_result,
             ),
         ):
@@ -176,7 +176,7 @@ class TestEvaluate:
                 return_value=MagicMock(),
             ),
             patch(
-                "deepeval.evaluate",
+                "deepeval.evaluate.evaluate",
                 return_value=mock_eval_result,
             ) as mock_deepeval,
         ):
@@ -212,7 +212,7 @@ class TestRunEval:
                 return_value=MagicMock(),
             ),
             patch(
-                "deepeval.evaluate",
+                "deepeval.evaluate.evaluate",
                 return_value=mock_eval_result,
             ),
         ):
@@ -259,7 +259,7 @@ class TestRunEval:
                 return_value=MagicMock(),
             ),
             patch(
-                "deepeval.evaluate",
+                "deepeval.evaluate.evaluate",
                 side_effect=mock_deepeval,
             ),
         ):
@@ -312,7 +312,7 @@ class TestLlmTest:
                 return_value=MagicMock(),
             ),
             patch(
-                "deepeval.evaluate",
+                "deepeval.evaluate.evaluate",
                 return_value=mock_eval_result,
             ),
         ):
@@ -343,7 +343,7 @@ class TestLlmTest:
                 return_value=MagicMock(),
             ),
             patch(
-                "deepeval.evaluate",
+                "deepeval.evaluate.evaluate",
                 return_value=mock_eval_result,
             ),
             pytest.raises(pytest.fail.Exception) as exc_info,
