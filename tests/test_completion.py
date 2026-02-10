@@ -4,6 +4,8 @@ import pytest
 
 from palindrom_ai.llm import complete, get_cost, get_usage, stream
 
+pytestmark = pytest.mark.integration
+
 
 @pytest.mark.asyncio
 async def test_complete_openai():

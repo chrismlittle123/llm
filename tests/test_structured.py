@@ -5,6 +5,8 @@ from pydantic import BaseModel, Field, field_validator
 
 from palindrom_ai.llm import extract, extract_stream
 
+pytestmark = pytest.mark.integration
+
 
 class SimpleUser(BaseModel):
     """Simple user model for testing."""
