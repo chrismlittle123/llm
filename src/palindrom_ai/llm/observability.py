@@ -7,13 +7,10 @@ Provides automatic tracing, metadata tracking, and cost monitoring.
 import os
 from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import ParamSpec, TypeVar, overload
+from typing import overload
 
 import litellm
 from langfuse.decorators import langfuse_context, observe
-
-P = ParamSpec("P")
-R = TypeVar("R")
 
 
 def init_observability() -> None:
@@ -46,13 +43,13 @@ def init_observability() -> None:
 
 
 @overload
-def trace(
+def trace[**P, R](
     func: Callable[P, Awaitable[R]],
 ) -> Callable[P, Awaitable[R]]: ...
 
 
 @overload
-def trace(
+def trace[**P, R](
     func: None = None,
     *,
     name: str | None = None,
@@ -62,7 +59,7 @@ def trace(
 ) -> Callable[[Callable[P, Awaitable[R]]], Callable[P, Awaitable[R]]]: ...
 
 
-def trace(
+def trace[**P, R](
     func: Callable[P, Awaitable[R]] | None = None,
     *,
     name: str | None = None,

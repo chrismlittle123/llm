@@ -102,9 +102,9 @@ class VectorStore:
 
         self.__collection.add(
             documents=documents,
-            embeddings=embeddings,
+            embeddings=embeddings,  # ty: ignore[invalid-argument-type]
             ids=ids,
-            metadatas=metadata,
+            metadatas=metadata,  # ty: ignore[invalid-argument-type]
         )
 
     async def search(
@@ -145,7 +145,7 @@ class VectorStore:
                     SearchResult(
                         id=results["ids"][0][i],
                         document=results["documents"][0][i] if results["documents"] else "",
-                        score=1 - results["distances"][0][i],  # Convert distance to similarity
+                        score=1 - results["distances"][0][i],  # ty: ignore[not-subscriptable]
                         metadata=results["metadatas"][0][i] if results["metadatas"] else {},
                     )
                 )

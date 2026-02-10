@@ -5,19 +5,17 @@ Provides Pydantic-validated responses from LLM calls with automatic retries.
 """
 
 from collections.abc import AsyncIterator
-from typing import Any, TypeVar, cast
+from typing import Any, cast
 
 import instructor
 from litellm import acompletion
 from pydantic import BaseModel
 
-T = TypeVar("T", bound=BaseModel)
-
 # Create instructor client with LiteLLM backend
 _client = instructor.from_litellm(acompletion)
 
 
-async def extract(
+async def extract[T: BaseModel](
     response_model: type[T],
     model: str,
     messages: list[dict[str, str]] | None = None,
@@ -75,7 +73,7 @@ async def extract(
     return cast(T, result)
 
 
-async def extract_stream(
+async def extract_stream[T: BaseModel](
     response_model: type[T],
     model: str,
     messages: list[dict[str, str]] | None = None,

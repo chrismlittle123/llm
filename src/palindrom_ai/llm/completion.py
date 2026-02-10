@@ -185,10 +185,10 @@ def get_usage(response: ModelResponse) -> UsageStats:
         >>> usage = get_usage(response)
         >>> print(f"Total tokens: {usage.total_tokens}")
     """
-    if response.usage is None:
+    if response.usage is None:  # ty: ignore[unresolved-attribute]
         raise ValueError("Usage information not available in response")
     return UsageStats(
-        prompt_tokens=response.usage.prompt_tokens,
-        completion_tokens=response.usage.completion_tokens,
-        total_tokens=response.usage.total_tokens,
+        prompt_tokens=response.usage.prompt_tokens,  # ty: ignore[unresolved-attribute]
+        completion_tokens=response.usage.completion_tokens,  # ty: ignore[unresolved-attribute]
+        total_tokens=response.usage.total_tokens,  # ty: ignore[unresolved-attribute]
     )

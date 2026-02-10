@@ -65,7 +65,7 @@ async def retrieve_and_generate(
         ],
     )
 
-    return response.choices[0].message.content or ""
+    return response.choices[0].message.content or ""  # ty: ignore[possibly-missing-attribute]
 
 
 def _format_context(results: list[SearchResult]) -> str:

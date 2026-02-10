@@ -321,7 +321,7 @@ class MetricsBridge:
 
         # Shutdown meter provider
         if self._meter_provider is not None:
-            self._meter_provider.shutdown()
+            self._meter_provider.shutdown()  # ty: ignore[unresolved-attribute]
             self._meter_provider = None
 
         # Close Langfuse HTTP client
@@ -415,11 +415,11 @@ async def collect_metrics_once() -> None:
         await bridge._collect_once()
         # Force a metric export
         if bridge._meter_provider is not None:
-            bridge._meter_provider.force_flush()
+            bridge._meter_provider.force_flush()  # ty: ignore[unresolved-attribute]
     finally:
         # Cleanup
         if bridge._meter_provider is not None:
-            bridge._meter_provider.shutdown()
+            bridge._meter_provider.shutdown()  # ty: ignore[unresolved-attribute]
         if bridge._langfuse_client is not None:
             bridge._langfuse_client.close()  # type: ignore[union-attr]
 

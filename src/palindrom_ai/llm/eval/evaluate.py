@@ -78,7 +78,7 @@ async def evaluate(
     metric_instances = [_get_metric_instance(m, threshold) for m in metrics]
 
     # Run evaluation
-    results = deepeval.evaluate([test_case], metric_instances)
+    results = deepeval.evaluate([test_case], metric_instances)  # ty: ignore[possibly-missing-attribute]
 
     # Aggregate results
     scores: dict[str, float] = {}
