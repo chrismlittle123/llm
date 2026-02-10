@@ -95,28 +95,10 @@ jobs:
     outputs:
       artifact_registry_url: ${{ steps.outputs.outputs.artifact_registry_url }}
       service_url: ${{ steps.outputs.outputs.service_url }}
+    env:
+      PULUMI_CONFIG_PASSPHRASE: ""
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Install infra dependencies
-        working-directory: infra
-        run: npm install
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ needs.setup.outputs.workload_identity_provider }}
-          service_account: ${{ needs.setup.outputs.service_account }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -124,31 +106,20 @@ jobs:
           role-to-assume: ${{ needs.setup.outputs.aws_role_arn }}
           aws-region: ${{ needs.setup.outputs.aws_region }}
 
-      - name: Install Pulumi
-        run: curl -fsSL https://get.pulumi.com | sh && echo "$HOME/.pulumi/bin" >> $GITHUB_PATH
-
-      - name: Deploy Infrastructure
-        working-directory: infra
-        run: |
-          export PATH="$HOME/.pulumi/bin:$PATH"
-          pulumi login ${{ needs.setup.outputs.pulumi_state_bucket }}
-          pulumi stack select ${{ needs.setup.outputs.environment }} --create
-          pulumi config set gcp:project ${{ needs.setup.outputs.project }}
-          pulumi config set gcp:region ${{ env.GCP_REGION }}
-          pulumi up --yes
-        env:
-          PULUMI_CONFIG_PASSPHRASE: ""
-          GOOGLE_PROJECT: ${{ needs.setup.outputs.project }}
+      - uses: chrismlittle123/github-actions/pulumi-deploy-gcp@main
+        with:
+          workload-identity-provider: ${{ needs.setup.outputs.workload_identity_provider }}
+          service-account: ${{ needs.setup.outputs.service_account }}
+          gcp-project: ${{ needs.setup.outputs.project }}
+          pulumi-state-bucket: ${{ needs.setup.outputs.pulumi_state_bucket }}
+          environment: ${{ needs.setup.outputs.environment }}
 
       - name: Get Pulumi Outputs
         id: outputs
         working-directory: infra
         run: |
-          export PATH="$HOME/.pulumi/bin:$PATH"
           echo "artifact_registry_url=$(pulumi stack output artifactRegistryUrl)" >> $GITHUB_OUTPUT
           echo "service_url=$(pulumi stack output serviceUrl)" >> $GITHUB_OUTPUT
-        env:
-          PULUMI_CONFIG_PASSPHRASE: ""
 
   build-and-push:
     name: Build and Push Docker Image
