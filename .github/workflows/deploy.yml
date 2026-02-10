@@ -3,6 +3,12 @@ name: Deploy to GCP
 on:
   push:
     branches: [main]
+    paths:
+      - 'infra/**'
+      - 'src/**'
+      - 'Dockerfile'
+      - 'pyproject.toml'
+      - 'uv.lock'
   workflow_dispatch:
     inputs:
       environment:
