@@ -56,6 +56,8 @@ target-version = "py313"
 select = ["E", "F", "I", "UP", "B", "SIM"]
 ignore = ["UP047"]  # Allow TypeVar style (PEP 484) instead of requiring PEP 695 type params
 
+[tool.ty]
+
 [tool.ty.environment]
 python-version = "3.13"
 
