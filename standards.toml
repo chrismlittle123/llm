@@ -1,18 +1,11 @@
-# Standards configuration for palindrom-ai-llm
-# Moderate checks for internal tools and services
+[metadata]
+tier = "internal"
+status = "active"
 
-[standards]
-ruleset = "python-internal"
+[extends]
+registry = "github:palindrom-ai/standards"
+rulesets = ["python-internal"]
 
-[code.linting.ruff]
+[process.ci]
 enabled = true
-
-[code.linting.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM"]
-ignore = ["E501"]
-
-[code.types.ty]
-enabled = true
-
-[code.unused.vulture]
-enabled = true
+require_workflows = ["ci.yml"]
