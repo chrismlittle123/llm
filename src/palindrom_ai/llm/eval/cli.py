@@ -5,7 +5,7 @@ import asyncio
 import json
 import sys
 
-from .batch import run_eval
+from .batch import EvalTestCase, run_eval
 from .metrics import Metric
 
 
@@ -14,7 +14,7 @@ async def main(test_file: str, output_format: str = "json") -> int:
     with open(test_file) as f:
         data = json.load(f)
 
-    test_cases = data["test_cases"]
+    test_cases = [EvalTestCase(**tc) for tc in data["test_cases"]]
     metrics = [Metric(m) for m in data.get("metrics", ["answer_relevancy"])]
     threshold = data.get("threshold", 0.7)
 

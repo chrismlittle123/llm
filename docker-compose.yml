@@ -3,7 +3,16 @@ services:
     build: .
     ports:
       - "8000:8000"
-    env_file: .env
+    environment:
+      - OPENAI_API_KEY
+      - ANTHROPIC_API_KEY
+      - GOOGLE_API_KEY
+      - LANGFUSE_PUBLIC_KEY
+      - LANGFUSE_SECRET_KEY
+      - LANGFUSE_HOST
+      - DEFAULT_MODEL
+      - SERVICE_NAME=llm-gateway
+      - SERVICE_ENVIRONMENT=development
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 30s

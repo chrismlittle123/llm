@@ -62,36 +62,32 @@ jobs:
               ;;
           esac
 
-  test:
-    name: Test
+  standards:
+    name: Standards Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.13
-        uses: actions/setup-python@v5
+      - uses: chrismlittle123/github-actions/python-standards-check@main
         with:
-          python-version: "3.13"
+          uv-sync-args: "--extra all --extra dev"
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [standards]
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: uv sync --extra all --extra dev
-
-      - name: Lint
-        run: uv run ruff check .
-
-      - name: Format check
-        run: uv run ruff format --check .
-
-      - name: Unit tests
-        run: uv run pytest -m "not integration" --tb=short -v
+      - uses: chrismlittle123/github-actions/python-test@main
+        with:
+          uv-sync-args: "--extra all --extra dev"
+          pytest-args: '-m "not integration" --tb=short -v'
 
   deploy-infra:
     name: Deploy Infrastructure
     runs-on: ubuntu-latest
-    needs: [setup, test]
+    needs: [setup, standards, test]
     outputs:
       artifact_registry_url: ${{ steps.outputs.outputs.artifact_registry_url }}
       service_url: ${{ steps.outputs.outputs.service_url }}

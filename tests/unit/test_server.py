@@ -54,7 +54,7 @@ def test_complete(mock_complete: AsyncMock):
     assert resp.status_code == 200
     data = resp.json()
     assert data["content"] == "Hi there"
-    assert data["usage"]["total_tokens"] == 15
+    assert data["usage"]["totalTokens"] == 15
 
 
 @patch("palindrom_ai.llm.server.routes.complete", new_callable=AsyncMock)
@@ -83,9 +83,9 @@ def test_complete_llm_error(mock_complete: AsyncMock):
     )
     assert resp.status_code == 500
     data = resp.json()
-    assert data["error"] == "Internal Server Error"
-    assert "provider down" in data["detail"]
-    assert data["request_id"] is not None
+    assert data["error"]["code"] == "INTERNAL_SERVER_ERROR"
+    assert "provider down" in data["error"]["message"]
+    assert data["error"]["requestId"] is not None
 
 
 # ---------------------------------------------------------------------------
@@ -113,7 +113,6 @@ def test_extract(mock_extract: AsyncMock):
     assert resp.status_code == 200
     data = resp.json()
     assert data["data"] == {"name": "Alice", "age": 30}
-    assert "usage" in data
 
 
 @patch("palindrom_ai.llm.server.routes.extract", new_callable=AsyncMock)
@@ -163,5 +162,5 @@ def test_value_error_returns_400(mock_complete: AsyncMock):
     )
     assert resp.status_code == 400
     data = resp.json()
-    assert data["error"] == "Bad Request"
-    assert "bad model name" in data["detail"]
+    assert data["error"]["code"] == "BAD_REQUEST"
+    assert "bad model name" in data["error"]["message"]

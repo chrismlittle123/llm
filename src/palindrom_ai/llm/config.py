@@ -12,8 +12,6 @@ class LLMSettings(BaseSettings):
     """LLM configuration loaded from environment variables."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
         extra="ignore",
     )
 
@@ -39,7 +37,7 @@ class LLMSettings(BaseSettings):
 
     # OTLP Configuration (for metrics export)
     otlp_endpoint: str = "http://localhost:4317"
-    otlp_insecure: bool = True
+    is_otlp_insecure: bool = True
     service_name: str = "palindrom-llm"
     service_environment: str = "development"
 

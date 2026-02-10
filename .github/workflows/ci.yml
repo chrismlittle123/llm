@@ -18,8 +18,22 @@ jobs:
         with:
           uv-sync-args: "--extra all --extra dev"
 
-  lint:
-    name: Lint
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [standards]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: chrismlittle123/github-actions/python-test@main
+        with:
+          uv-sync-args: "--extra all --extra dev"
+          pytest-args: '-m "not integration" --tb=short -v'
+          coverage-threshold: "80"
+
+  openapi-check:
+    name: OpenAPI Spec Check
     runs-on: ubuntu-latest
 
     steps:
@@ -34,24 +48,10 @@ jobs:
         uses: astral-sh/setup-uv@v4
 
       - name: Install dependencies
-        run: uv sync --extra all --extra dev
+        run: uv sync --extra server
 
-      - name: Run linting
-        run: uv run ruff check .
+      - name: Generate OpenAPI spec
+        run: uv run python scripts/export_openapi.py
 
-      - name: Run format check
-        run: uv run ruff format --check .
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    needs: [lint]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: chrismlittle123/github-actions/python-test@main
-        with:
-          uv-sync-args: "--extra all --extra dev"
-          pytest-args: '-m "not integration" --tb=short -v'
-          coverage-threshold: "80"
+      - name: Check for drift
+        run: git diff --exit-code openapi.json || (echo "openapi.json is out of date. Run 'uv run python scripts/export_openapi.py' and commit." && exit 1)

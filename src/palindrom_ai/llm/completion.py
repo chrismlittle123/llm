@@ -54,6 +54,10 @@ async def complete(
     timeout: float | None = None,
     retry_config: RetryConfig | None = None,
     settings: LLMSettings | None = None,
+    project: str | None = None,
+    feature: str | None = None,
+    user_id: str | None = None,
+    request_id: str | None = None,
     **kwargs: Any,
 ) -> ModelResponse:
     """
@@ -70,6 +74,10 @@ async def complete(
         timeout: Request timeout in seconds (uses settings default if not provided)
         retry_config: Optional RetryConfig for fine-grained retry control
         settings: Optional custom LLMSettings instance (uses global if not provided)
+        project: Project identifier for observability tracking
+        feature: Feature or use case name for observability tracking
+        user_id: User who triggered the call
+        request_id: Correlation ID linking to app logs
         **kwargs: Additional args passed to LiteLLM
 
     Returns:
@@ -79,16 +87,10 @@ async def complete(
         >>> response = await complete(
         ...     model="gpt-4o",
         ...     messages=[{"role": "user", "content": "Hello!"}],
+        ...     project="my-app",
+        ...     feature="chat",
         ... )
         >>> print(response.choices[0].message.content)
-
-        >>> # With custom retry config
-        >>> config = RetryConfig(max_retries=5, min_wait=2.0, multiplier=3.0)
-        >>> response = await complete(
-        ...     model="gpt-4o",
-        ...     messages=[{"role": "user", "content": "Hello!"}],
-        ...     retry_config=config,
-        ... )
     """
     s = settings or get_settings()
     rc = retry_config or RetryConfig.from_settings(s)
@@ -96,6 +98,19 @@ async def complete(
     # Allow max_retries to override retry_config for backwards compatibility
     effective_retries = max_retries if max_retries is not None else rc.max_retries
     effective_timeout = timeout if timeout is not None else s.default_timeout
+
+    # Build LLM call metadata (LLM Services standard)
+    call_metadata: dict[str, str] = {}
+    if project:
+        call_metadata["project"] = project
+    if feature:
+        call_metadata["feature"] = feature
+    if user_id:
+        call_metadata["user_id"] = user_id
+    if request_id:
+        call_metadata["request_id"] = request_id
+    if call_metadata:
+        kwargs["metadata"] = {**kwargs.get("metadata", {}), **call_metadata}
 
     return await litellm_acompletion(
         model=model,
@@ -112,6 +127,10 @@ async def stream(
     messages: list[dict[str, str]],
     timeout: float | None = None,
     settings: LLMSettings | None = None,
+    project: str | None = None,
+    feature: str | None = None,
+    user_id: str | None = None,
+    request_id: str | None = None,
     **kwargs: Any,
 ) -> AsyncIterator[str]:
     """
@@ -122,6 +141,10 @@ async def stream(
         messages: List of message dicts
         timeout: Request timeout in seconds (uses settings default if not provided)
         settings: Optional custom LLMSettings instance (uses global if not provided)
+        project: Project identifier for observability tracking
+        feature: Feature or use case name for observability tracking
+        user_id: User who triggered the call
+        request_id: Correlation ID linking to app logs
         **kwargs: Additional args passed to LiteLLM
 
     Yields:
@@ -131,11 +154,26 @@ async def stream(
         >>> async for token in stream(
         ...     model="gpt-4o",
         ...     messages=[{"role": "user", "content": "Tell me a story"}],
+        ...     project="my-app",
+        ...     feature="chat",
         ... ):
         ...     print(token, end="", flush=True)
     """
     s = settings or get_settings()
     effective_timeout = timeout if timeout is not None else s.default_timeout
+
+    # Build LLM call metadata (LLM Services standard)
+    call_metadata: dict[str, str] = {}
+    if project:
+        call_metadata["project"] = project
+    if feature:
+        call_metadata["feature"] = feature
+    if user_id:
+        call_metadata["user_id"] = user_id
+    if request_id:
+        call_metadata["request_id"] = request_id
+    if call_metadata:
+        kwargs["metadata"] = {**kwargs.get("metadata", {}), **call_metadata}
 
     response = await litellm_acompletion(
         model=model,

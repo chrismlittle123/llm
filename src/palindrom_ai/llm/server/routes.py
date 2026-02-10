@@ -3,6 +3,7 @@
 from typing import Any
 
 from fastapi import APIRouter, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, create_model
 
 from palindrom_ai.llm.completion import complete
@@ -11,6 +12,7 @@ from palindrom_ai.llm.server.models import (
     CompletionResponse,
     ExtractionRequest,
     ExtractionResponse,
+    UsageResponse,
 )
 from palindrom_ai.llm.structured import extract
 
@@ -71,33 +73,36 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@router.post("/v1/complete")
-async def complete_endpoint(body: CompletionRequest) -> CompletionResponse:
+@router.post("/v1/complete", response_model=CompletionResponse)
+async def complete_endpoint(body: CompletionRequest, request: Request) -> JSONResponse:
+    request_id = getattr(request.state, "request_id", None)
     response = await complete(
         model=body.model,
         messages=body.messages,
         fallbacks=body.fallbacks,
         max_retries=body.max_retries,
         timeout=body.timeout,
+        request_id=request_id,
     )
     # Access via model_dump() — litellm's ModelResponse uses Pydantic extra='allow'
     # which ty cannot resolve for direct attribute access.
     data = response.model_dump()
     choices = data.get("choices", [])
     content = choices[0]["message"]["content"] or "" if choices else ""
-    usage = {}
+    usage = None
     usage_data = data.get("usage")
     if usage_data:
-        usage = {
-            "prompt_tokens": usage_data["prompt_tokens"],
-            "completion_tokens": usage_data["completion_tokens"],
-            "total_tokens": usage_data["total_tokens"],
-        }
-    return CompletionResponse(content=content, usage=usage)
+        usage = UsageResponse(
+            prompt_tokens=usage_data["prompt_tokens"],
+            completion_tokens=usage_data["completion_tokens"],
+            total_tokens=usage_data["total_tokens"],
+        )
+    result = CompletionResponse(content=content, usage=usage)
+    return JSONResponse(content=result.model_dump(by_alias=True, exclude_none=True))
 
 
-@router.post("/v1/extract")
-async def extract_endpoint(body: ExtractionRequest, request: Request) -> ExtractionResponse:
+@router.post("/v1/extract", response_model=ExtractionResponse)
+async def extract_endpoint(body: ExtractionRequest, request: Request) -> JSONResponse:
     response_model = _build_response_model(body.response_schema)
     result = await extract(
         response_model=response_model,
@@ -107,5 +112,5 @@ async def extract_endpoint(body: ExtractionRequest, request: Request) -> Extract
         max_retries=body.max_retries,
     )
     data = result.model_dump()
-    # Usage is tracked via observability; return empty dict as placeholder
-    return ExtractionResponse(data=data, usage={})
+    response = ExtractionResponse(data=data)
+    return JSONResponse(content=response.model_dump(by_alias=True, exclude_none=True))

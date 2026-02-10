@@ -1,11 +1,13 @@
 """FastAPI HTTP gateway for the Palindrom AI LLM SDK."""
 
 import importlib
+import json
 import logging
 import os
-import uuid
+import secrets
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from typing import Any, cast
 
 from fastapi import FastAPI, Request
@@ -14,9 +16,42 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from starlette.types import ASGIApp, Receive, Scope, Send
 
+from palindrom_ai.llm.server.models import ErrorDetail, ErrorResponse
 from palindrom_ai.llm.server.routes import router
 
+REQUEST_ID_PREFIX = "req_"
+
 logger = logging.getLogger(__name__)
+
+
+# --- Structured JSON logging ---
+class _JSONFormatter(logging.Formatter):
+    """Structured JSON log formatter with required observability fields."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        log_data: dict[str, Any] = {
+            "timestamp": datetime.now(UTC).isoformat(),
+            "level": record.levelname.lower(),
+            "message": record.getMessage(),
+            "service": os.getenv("SERVICE_NAME", "palindrom-llm"),
+            "environment": os.getenv("SERVICE_ENVIRONMENT", "development"),
+            "logger": record.name,
+        }
+        if hasattr(record, "request_id"):
+            log_data["requestId"] = record.request_id
+        if record.exc_info and record.exc_info[0] is not None:
+            log_data["exception"] = self.formatException(record.exc_info)
+        return json.dumps(log_data)
+
+
+def _configure_logging() -> None:
+    """Configure structured JSON logging for the server."""
+    handler = logging.StreamHandler()
+    handler.setFormatter(_JSONFormatter())
+    root = logging.getLogger()
+    root.handlers.clear()
+    root.addHandler(handler)
+    root.setLevel(logging.INFO)
 
 
 def _resolve_secrets() -> None:
@@ -43,7 +78,8 @@ def _resolve_secrets() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Startup: resolve secrets, init observability. Shutdown: flush traces."""
+    """Startup: configure logging, resolve secrets, init observability. Shutdown: flush traces."""
+    _configure_logging()
     _resolve_secrets()
     try:
         from palindrom_ai.llm.observability import init_observability
@@ -86,7 +122,7 @@ class RequestIDMiddleware:
             await self.app(scope, receive, send)
             return
 
-        request_id = str(uuid.uuid4())
+        request_id = f"{REQUEST_ID_PREFIX}{secrets.token_urlsafe(16)}"
         scope.setdefault("state", {})["request_id"] = request_id
 
         async def send_with_request_id(message: Any) -> None:
@@ -107,41 +143,34 @@ def _get_request_id(request: Request) -> str | None:
     return getattr(request.state, "request_id", None)
 
 
+def _error_response(status_code: int, code: str, message: str, request: Request) -> JSONResponse:
+    """Build a standard error response per data conventions."""
+    return JSONResponse(
+        status_code=status_code,
+        content=ErrorResponse(
+            error=ErrorDetail(
+                code=code,
+                message=message,
+                request_id=_get_request_id(request),
+            )
+        ).model_dump(by_alias=True, exclude_none=True),
+    )
+
+
 @app.exception_handler(ValueError)
 async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
-    return JSONResponse(
-        status_code=400,
-        content={
-            "error": "Bad Request",
-            "detail": str(exc),
-            "request_id": _get_request_id(request),
-        },
-    )
+    return _error_response(400, "BAD_REQUEST", str(exc), request)
 
 
 @app.exception_handler(ValidationError)
 async def validation_error_handler(request: Request, exc: ValidationError) -> JSONResponse:
-    return JSONResponse(
-        status_code=422,
-        content={
-            "error": "Validation Error",
-            "detail": str(exc),
-            "request_id": _get_request_id(request),
-        },
-    )
+    return _error_response(422, "VALIDATION_ERROR", str(exc), request)
 
 
 @app.exception_handler(Exception)
 async def generic_error_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.exception("Unhandled error")
-    return JSONResponse(
-        status_code=500,
-        content={
-            "error": "Internal Server Error",
-            "detail": str(exc),
-            "request_id": _get_request_id(request),
-        },
-    )
+    return _error_response(500, "INTERNAL_SERVER_ERROR", str(exc), request)
 
 
 # --- Routes ---

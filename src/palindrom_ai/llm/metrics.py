@@ -87,7 +87,7 @@ class MetricsBridge:
 
         exporter = OTLPMetricExporter(
             endpoint=settings.otlp_endpoint,
-            insecure=settings.otlp_insecure,
+            insecure=settings.is_otlp_insecure,
         )
 
         reader = PeriodicExportingMetricReader(
@@ -287,7 +287,7 @@ class MetricsBridge:
             try:
                 await self._collect_once()
             except Exception as e:
-                logger.exception(f"Error collecting metrics: {e}")
+                logger.exception("Error collecting metrics: %s", e)
 
             await asyncio.sleep(self.poll_interval)
 
@@ -295,7 +295,7 @@ class MetricsBridge:
         """Perform a single metrics collection cycle."""
         data = await self._fetch_langfuse_metrics()
         self._parse_metrics(data)
-        logger.debug(f"Collected metrics: {self._metric_values}")
+        logger.debug("Collected metrics: %s", self._metric_values)
 
     def start(self) -> None:
         """Start the metrics polling loop."""
@@ -307,8 +307,9 @@ class MetricsBridge:
         self._running = True
         self._task = asyncio.create_task(self._poll_loop())
         logger.info(
-            f"Metrics bridge started (poll_interval={self.poll_interval}s, "
-            f"lookback_window={self.lookback_window}s)"
+            "Metrics bridge started (poll_interval=%ss, lookback_window=%ss)",
+            self.poll_interval,
+            self.lookback_window,
         )
 
     async def stop(self) -> None:

@@ -334,7 +334,7 @@ class TestConfigFields:
 
         settings = LLMSettings()
         assert settings.otlp_endpoint == "http://localhost:4317"
-        assert settings.otlp_insecure is True
+        assert settings.is_otlp_insecure is True
         assert settings.service_name == "palindrom-llm"
         assert settings.service_environment == "development"
 
@@ -346,13 +346,13 @@ class TestConfigFields:
             os.environ,
             {
                 "OTLP_ENDPOINT": "http://signoz:4317",
-                "OTLP_INSECURE": "false",
+                "IS_OTLP_INSECURE": "false",
                 "SERVICE_NAME": "my-app",
                 "SERVICE_ENVIRONMENT": "production",
             },
         ):
             settings = LLMSettings()
             assert settings.otlp_endpoint == "http://signoz:4317"
-            assert settings.otlp_insecure is False
+            assert settings.is_otlp_insecure is False
             assert settings.service_name == "my-app"
             assert settings.service_environment == "production"

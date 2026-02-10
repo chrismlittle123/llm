@@ -2,8 +2,19 @@
 
 from dataclasses import dataclass
 
+from pydantic import BaseModel
+
 from .evaluate import EvalResult, evaluate
 from .metrics import Metric
+
+
+class EvalTestCase(BaseModel):
+    """A single test case for LLM evaluation."""
+
+    input: str
+    output: str
+    expected: str | None = None
+    context: list[str] | None = None
 
 
 @dataclass
@@ -18,7 +29,7 @@ class BatchEvalResult:
 
 
 async def run_eval(
-    test_cases: list[dict],
+    test_cases: list[EvalTestCase],
     metrics: list[Metric],
     threshold: float = 0.7,
 ) -> BatchEvalResult:
@@ -26,7 +37,7 @@ async def run_eval(
     Run evaluation on multiple test cases.
 
     Args:
-        test_cases: List of dicts with input, output, expected, context
+        test_cases: List of EvalTestCase instances
         metrics: Metrics to evaluate
         threshold: Score threshold
 
@@ -38,10 +49,10 @@ async def run_eval(
 
     for case in test_cases:
         result = await evaluate(
-            input=case["input"],
-            output=case["output"],
-            expected=case.get("expected"),
-            context=case.get("context"),
+            input=case.input,
+            output=case.output,
+            expected=case.expected,
+            context=case.context,
             metrics=metrics,
             threshold=threshold,
         )

@@ -7,6 +7,7 @@ import pytest
 from palindrom_ai.llm.eval import (
     BatchEvalResult,
     EvalResult,
+    EvalTestCase,
     Metric,
     evaluate,
     llm_test,
@@ -218,8 +219,8 @@ class TestRunEval:
         ):
             results = await run_eval(
                 test_cases=[
-                    {"input": "2+2?", "output": "4", "expected": "4"},
-                    {"input": "Capital of UK?", "output": "London", "expected": "London"},
+                    EvalTestCase(input="2+2?", output="4", expected="4"),
+                    EvalTestCase(input="Capital of UK?", output="London", expected="London"),
                 ],
                 metrics=[Metric.ANSWER_RELEVANCY],
             )
@@ -265,8 +266,8 @@ class TestRunEval:
         ):
             results = await run_eval(
                 test_cases=[
-                    {"input": "good", "output": "good answer"},
-                    {"input": "bad", "output": "bad answer"},
+                    EvalTestCase(input="good", output="good answer"),
+                    EvalTestCase(input="bad", output="bad answer"),
                 ],
                 metrics=[Metric.ANSWER_RELEVANCY],
             )
