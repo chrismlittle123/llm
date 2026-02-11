@@ -102,10 +102,20 @@ curl -X POST https://llm-gateway-api-container-dev-10492061315.europe-west2.run.
 
 ### TypeScript Client
 
-Install the client in any TypeScript/JavaScript project:
+Install the client from Git in any TypeScript/JavaScript project:
 
 ```bash
-pnpm add @palindrom-ai/llm-client
+pnpm add github:chrismlittle123/llm#main --filter @palindrom-ai/llm-client
+```
+
+Or add it to your `package.json` directly:
+
+```json
+{
+  "dependencies": {
+    "@palindrom-ai/llm-client": "github:chrismlittle123/llm#main&path:client"
+  }
+}
 ```
 
 ```typescript
