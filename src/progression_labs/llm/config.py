@@ -38,7 +38,7 @@ class LLMSettings(BaseSettings):
     # OTLP Configuration (for metrics export)
     otlp_endpoint: str = "http://localhost:4317"
     is_otlp_insecure: bool = True
-    service_name: str = "palindrom-llm"
+    service_name: str = "progression-labs-llm"
     service_environment: str = "development"
 
 

@@ -16,7 +16,7 @@ Create a unified LLM API wrapper using LiteLLM that supports OpenAI, Anthropic, 
 ## API Design
 
 ```python
-from palindrom_ai.llm import complete, acompletion, LLMClient
+from progression_labs.llm import complete, acompletion, LLMClient
 
 # Simple usage
 response = await complete(
@@ -43,7 +43,7 @@ response = await client.complete(messages=[...])
 ## Implementation
 
 ```python
-# src/palindrom_ai/llm/completion.py
+# src/progression_labs/llm/completion.py
 
 from typing import Any
 import litellm
@@ -89,7 +89,7 @@ def get_cost(response: litellm.ModelResponse) -> float:
 ## Streaming Support
 
 ```python
-# src/palindrom_ai/llm/completion.py
+# src/progression_labs/llm/completion.py
 
 from collections.abc import AsyncIterator
 
@@ -118,7 +118,7 @@ async def stream(
 ## Configuration
 
 ```python
-# src/palindrom_ai/llm/config.py
+# src/progression_labs/llm/config.py
 
 from pydantic_settings import BaseSettings
 
@@ -145,7 +145,7 @@ class LLMSettings(BaseSettings):
 # tests/test_completion.py
 
 import pytest
-from palindrom_ai.llm import complete, get_cost
+from progression_labs.llm import complete, get_cost
 
 @pytest.mark.asyncio
 async def test_complete_openai():

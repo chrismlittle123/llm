@@ -15,7 +15,7 @@ Implement simple RAG functionality using ChromaDB for vector storage and LiteLLM
 ## API Design
 
 ```python
-from palindrom_ai.llm.rag import VectorStore, embed, retrieve_and_generate
+from progression_labs.llm.rag import VectorStore, embed, retrieve_and_generate
 
 # Create vector store
 store = VectorStore(collection_name="docs")
@@ -43,7 +43,7 @@ answer = await retrieve_and_generate(
 ### Embeddings
 
 ```python
-# src/palindrom_ai/llm/rag/embeddings.py
+# src/progression_labs/llm/rag/embeddings.py
 
 import litellm
 
@@ -80,7 +80,7 @@ async def embed_single(
 ### Vector Store
 
 ```python
-# src/palindrom_ai/llm/rag/vectorstore.py
+# src/progression_labs/llm/rag/vectorstore.py
 
 from dataclasses import dataclass
 import chromadb
@@ -203,7 +203,7 @@ class VectorStore:
 ### Retrieve and Generate
 
 ```python
-# src/palindrom_ai/llm/rag/generate.py
+# src/progression_labs/llm/rag/generate.py
 
 from ..completion import complete
 from .vectorstore import VectorStore
@@ -263,7 +263,7 @@ Context:
 # tests/test_rag.py
 
 import pytest
-from palindrom_ai.llm.rag import VectorStore, embed, retrieve_and_generate
+from progression_labs.llm.rag import VectorStore, embed, retrieve_and_generate
 
 @pytest.mark.asyncio
 async def test_embed():
@@ -306,7 +306,7 @@ async def test_retrieve_and_generate():
 The `VectorStore` interface is designed for easy migration:
 
 ```python
-# Future: src/palindrom_ai/llm/rag/qdrant_store.py
+# Future: src/progression_labs/llm/rag/qdrant_store.py
 
 from qdrant_client import QdrantClient
 

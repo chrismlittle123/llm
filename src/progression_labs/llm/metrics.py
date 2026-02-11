@@ -14,7 +14,7 @@ import logging
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
-from palindrom_ai.llm.config import LLMSettings, get_settings
+from progression_labs.llm.config import LLMSettings, get_settings
 
 if TYPE_CHECKING:
     import httpx
@@ -96,7 +96,7 @@ class MetricsBridge:
         )
 
         self._meter_provider = MeterProvider(resource=resource, metric_readers=[reader])
-        self._meter = self._meter_provider.get_meter("palindrom-llm-metrics")
+        self._meter = self._meter_provider.get_meter("progression-labs-llm-metrics")
 
         # Register observable gauges for all metrics
         self._register_gauges()

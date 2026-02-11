@@ -7,7 +7,7 @@ These tests call real LLM providers. Requires API keys
 import pytest
 from pydantic import BaseModel, Field, field_validator
 
-from palindrom_ai.llm import extract, extract_stream
+from progression_labs.llm import extract, extract_stream
 
 pytestmark = pytest.mark.integration
 

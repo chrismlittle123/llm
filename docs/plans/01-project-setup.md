@@ -2,7 +2,7 @@
 
 ## Objective
 
-Set up the Python package structure, dependencies, and CI/CD for `@palindrom-ai/llm`.
+Set up the Python package structure, dependencies, and CI/CD for `@progression-labs/llm`.
 
 ## Tasks
 
@@ -17,7 +17,7 @@ Set up the Python package structure, dependencies, and CI/CD for `@palindrom-ai/
 ```
 llm/
 ├── src/
-│   └── palindrom_ai/
+│   └── progression_labs/
 │       └── llm/
 │           ├── __init__.py
 │           ├── client.py          # Main client
@@ -51,9 +51,9 @@ llm/
 
 ```toml
 [project]
-name = "palindrom-ai-llm"
+name = "progression-labs-llm"
 version = "0.1.0"
-description = "Unified Python LLM SDK for Palindrom"
+description = "Unified Python LLM SDK for Progression Labs"
 requires-python = ">=3.11"
 dependencies = [
     "litellm>=1.55.0",
@@ -77,7 +77,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/palindrom_ai"]
+packages = ["src/progression_labs"]
 
 [tool.ruff]
 line-length = 100

@@ -4,7 +4,7 @@ RAG (Retrieval-Augmented Generation) module.
 Provides embeddings, vector storage, and retrieve-and-generate functionality.
 
 Example:
-    >>> from palindrom_ai.llm.rag import VectorStore, embed, retrieve_and_generate
+    >>> from progression_labs.llm.rag import VectorStore, embed, retrieve_and_generate
     >>>
     >>> # Create vector store
     >>> store = VectorStore(collection_name="docs")

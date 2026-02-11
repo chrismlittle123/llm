@@ -1,6 +1,6 @@
 """Tests for LLM configuration module."""
 
-from palindrom_ai.llm.config import (
+from progression_labs.llm.config import (
     LLMSettings,
     configure,
     get_settings,

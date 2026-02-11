@@ -1368,7 +1368,7 @@ wheels = [
 ]
 
 [[package]]
-name = "palindrom-ai-llm"
+name = "progression-labs-llm"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
@@ -1436,7 +1436,7 @@ requires-dist = [
     { name = "litellm", specifier = ">=1.55.0" },
     { name = "opentelemetry-exporter-otlp-proto-grpc", marker = "extra == 'metrics'", specifier = ">=1.20.0" },
     { name = "opentelemetry-sdk", marker = "extra == 'metrics'", specifier = ">=1.20.0" },
-    { name = "palindrom-ai-llm", extras = ["rag", "eval", "metrics", "secrets", "server"], marker = "extra == 'all'" },
+    { name = "progression-labs-llm", extras = ["rag", "eval", "metrics", "secrets", "server"], marker = "extra == 'all'" },
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "pydantic-settings", specifier = ">=2.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },

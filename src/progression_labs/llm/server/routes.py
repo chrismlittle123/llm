@@ -6,15 +6,15 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, create_model
 
-from palindrom_ai.llm.completion import complete
-from palindrom_ai.llm.server.models import (
+from progression_labs.llm.completion import complete
+from progression_labs.llm.server.models import (
     CompletionRequest,
     CompletionResponse,
     ExtractionRequest,
     ExtractionResponse,
     UsageResponse,
 )
-from palindrom_ai.llm.structured import extract
+from progression_labs.llm.structured import extract
 
 router = APIRouter()
 

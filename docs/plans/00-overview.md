@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the implementation plan for `@palindrom-ai/llm`, a unified Python LLM SDK.
+This document outlines the implementation plan for `@progression-labs/llm`, a unified Python LLM SDK.
 
 ## Components
 
@@ -49,7 +49,7 @@ This document outlines the implementation plan for `@palindrom-ai/llm`, a unifie
 
 ## Success Criteria
 
-- [ ] Package installable via `pip install palindrom-ai-llm`
+- [ ] Package installable via `pip install progression-labs-llm`
 - [ ] Unified API for OpenAI, Anthropic, Google
 - [ ] All LLM calls return validated Pydantic models
 - [ ] Traces visible in Langfuse

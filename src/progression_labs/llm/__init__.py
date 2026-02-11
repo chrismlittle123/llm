@@ -1,5 +1,5 @@
 """
-Palindrom AI LLM SDK
+Progression Labs LLM SDK
 
 Unified Python SDK for LLM operations including:
 - Multi-provider completions (OpenAI, Anthropic, Google)
@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 
 __version__ = "0.1.0"
 
-from palindrom_ai.llm.completion import (
+from progression_labs.llm.completion import (
     RetryConfig,
     UsageStats,
     complete,
@@ -21,25 +21,25 @@ from palindrom_ai.llm.completion import (
     get_usage,
     stream,
 )
-from palindrom_ai.llm.config import (
+from progression_labs.llm.config import (
     LLMSettings,
     configure,
     get_settings,
     reset_settings,
     set_settings,
 )
-from palindrom_ai.llm.structured import extract, extract_stream
+from progression_labs.llm.structured import extract, extract_stream
 
 # Lazy imports for observability (langfuse may not be compatible with all Python versions)
 if TYPE_CHECKING:
-    from palindrom_ai.llm.metrics import (
+    from progression_labs.llm.metrics import (
         MetricsBridge,
         collect_metrics_once,
         init_metrics_bridge,
         reset_metrics_bridge,
         stop_metrics_bridge,
     )
-    from palindrom_ai.llm.observability import (
+    from progression_labs.llm.observability import (
         add_trace_metadata,
         flush_traces,
         init_observability,
@@ -47,13 +47,13 @@ if TYPE_CHECKING:
         set_trace_user,
         trace,
     )
-    from palindrom_ai.llm.prompts import (
+    from progression_labs.llm.prompts import (
         get_chat_prompt,
         get_langfuse,
         get_prompt,
         get_prompt_with_vars,
     )
-    from palindrom_ai.llm.rag import (
+    from progression_labs.llm.rag import (
         CacheStats,
         SearchResult,
         VectorStore,
@@ -64,7 +64,7 @@ if TYPE_CHECKING:
         get_embedding_cache_stats,
         retrieve_and_generate,
     )
-    from palindrom_ai.llm.server.app import app as server_app
+    from progression_labs.llm.server.app import app as server_app
 
 __all__ = [
     # Version
@@ -128,7 +128,7 @@ def __getattr__(name: str):
         "set_trace_session",
         "flush_traces",
     ):
-        from palindrom_ai.llm import observability
+        from progression_labs.llm import observability
 
         return getattr(observability, name)
     if name in (
@@ -138,11 +138,11 @@ def __getattr__(name: str):
         "reset_metrics_bridge",
         "MetricsBridge",
     ):
-        from palindrom_ai.llm import metrics
+        from progression_labs.llm import metrics
 
         return getattr(metrics, name)
     if name in ("get_prompt", "get_prompt_with_vars", "get_chat_prompt", "get_langfuse"):
-        from palindrom_ai.llm import prompts
+        from progression_labs.llm import prompts
 
         return getattr(prompts, name)
     if name in (
@@ -156,11 +156,11 @@ def __getattr__(name: str):
         "get_embedding_cache_stats",
         "CacheStats",
     ):
-        from palindrom_ai.llm import rag
+        from progression_labs.llm import rag
 
         return getattr(rag, name)
     if name == "server_app":
-        from palindrom_ai.llm.server.app import app
+        from progression_labs.llm.server.app import app
 
         return app
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from palindrom_ai.llm.rag import (
+from progression_labs.llm.rag import (
     SearchResult,
     VectorStore,
     embed,
@@ -26,7 +26,7 @@ class TestEmbed:
         ]
 
         with patch(
-            "palindrom_ai.llm.rag.embeddings.litellm.aembedding",
+            "progression_labs.llm.rag.embeddings.litellm.aembedding",
             return_value=mock_response,
         ):
             embeddings = await embed(["hello", "world"])
@@ -42,7 +42,7 @@ class TestEmbed:
         mock_response.data = [{"embedding": [0.1, 0.2, 0.3]}]
 
         with patch(
-            "palindrom_ai.llm.rag.embeddings.litellm.aembedding",
+            "progression_labs.llm.rag.embeddings.litellm.aembedding",
             return_value=mock_response,
         ):
             embedding = await embed_single("hello")
@@ -56,7 +56,7 @@ class TestEmbed:
         mock_response.data = [{"embedding": [0.1]}]
 
         with patch(
-            "palindrom_ai.llm.rag.embeddings.litellm.aembedding", return_value=mock_response
+            "progression_labs.llm.rag.embeddings.litellm.aembedding", return_value=mock_response
         ) as mock_aembedding:
             await embed(["hello"], model="text-embedding-3-large")
 
@@ -75,7 +75,7 @@ class TestVectorStore:
         mock_embedding = [0.1, 0.2, 0.3]
 
         with patch(
-            "palindrom_ai.llm.rag.vectorstore.embed",
+            "progression_labs.llm.rag.vectorstore.embed",
             return_value=[mock_embedding, mock_embedding],
         ):
             store = VectorStore(collection_name="test_add")
@@ -92,7 +92,7 @@ class TestVectorStore:
         mock_embedding = [0.1, 0.2, 0.3]
 
         with patch(
-            "palindrom_ai.llm.rag.vectorstore.embed",
+            "progression_labs.llm.rag.vectorstore.embed",
             return_value=[mock_embedding],
         ):
             store = VectorStore(collection_name="test_metadata")
@@ -110,7 +110,7 @@ class TestVectorStore:
         mock_embedding = [0.1, 0.2, 0.3]
 
         with patch(
-            "palindrom_ai.llm.rag.vectorstore.embed",
+            "progression_labs.llm.rag.vectorstore.embed",
             return_value=[mock_embedding, mock_embedding],
         ):
             store = VectorStore(collection_name="test_search")
@@ -120,7 +120,7 @@ class TestVectorStore:
             )
 
         with patch(
-            "palindrom_ai.llm.rag.vectorstore.embed_single",
+            "progression_labs.llm.rag.vectorstore.embed_single",
             return_value=mock_embedding,
         ):
             results = await store.search("programming", top_k=2)
@@ -137,7 +137,7 @@ class TestVectorStore:
         mock_embedding = [0.1, 0.2, 0.3]
 
         with patch(
-            "palindrom_ai.llm.rag.vectorstore.embed",
+            "progression_labs.llm.rag.vectorstore.embed",
             return_value=[mock_embedding],
         ):
             store = VectorStore(collection_name="test_delete")
@@ -158,7 +158,7 @@ class TestVectorStore:
         mock_embedding = [0.1, 0.2, 0.3]
 
         with patch(
-            "palindrom_ai.llm.rag.vectorstore.embed",
+            "progression_labs.llm.rag.vectorstore.embed",
             return_value=[mock_embedding, mock_embedding],
         ):
             store = VectorStore(collection_name="test_clear")
@@ -192,7 +192,7 @@ class TestRetrieveAndGenerate:
             "choices": [{"message": {"content": "The capital of France is Paris."}}],
         }
 
-        with patch("palindrom_ai.llm.rag.generate.complete", return_value=mock_response):
+        with patch("progression_labs.llm.rag.generate.complete", return_value=mock_response):
             answer = await retrieve_and_generate(
                 query="What is the capital of France?",
                 store=mock_store,
@@ -214,7 +214,7 @@ class TestRetrieveAndGenerate:
         }
 
         with patch(
-            "palindrom_ai.llm.rag.generate.complete", return_value=mock_response
+            "progression_labs.llm.rag.generate.complete", return_value=mock_response
         ) as mock_complete:
             await retrieve_and_generate(
                 query="test",
@@ -238,7 +238,7 @@ class TestRetrieveAndGenerate:
             "choices": [{"message": {"content": "response"}}],
         }
 
-        with patch("palindrom_ai.llm.rag.generate.complete", return_value=mock_response):
+        with patch("progression_labs.llm.rag.generate.complete", return_value=mock_response):
             await retrieve_and_generate(
                 query="test",
                 store=mock_store,

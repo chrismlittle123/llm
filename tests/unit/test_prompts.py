@@ -2,8 +2,8 @@
 
 from unittest.mock import MagicMock, patch
 
-import palindrom_ai.llm.prompts as prompts_module
-from palindrom_ai.llm import get_chat_prompt, get_langfuse, get_prompt, get_prompt_with_vars
+import progression_labs.llm.prompts as prompts_module
+from progression_labs.llm import get_chat_prompt, get_langfuse, get_prompt, get_prompt_with_vars
 
 
 class TestGetLangfuse:
@@ -11,7 +11,7 @@ class TestGetLangfuse:
 
     def test_returns_langfuse_client(self):
         """Test that get_langfuse returns a Langfuse client."""
-        with patch("palindrom_ai.llm.prompts.Langfuse") as mock_langfuse:
+        with patch("progression_labs.llm.prompts.Langfuse") as mock_langfuse:
             mock_client = MagicMock()
             mock_langfuse.return_value = mock_client
 
@@ -24,7 +24,7 @@ class TestGetLangfuse:
 
     def test_returns_singleton(self):
         """Test that get_langfuse returns the same instance."""
-        with patch("palindrom_ai.llm.prompts.Langfuse") as mock_langfuse:
+        with patch("progression_labs.llm.prompts.Langfuse") as mock_langfuse:
             mock_client = MagicMock()
             mock_langfuse.return_value = mock_client
 

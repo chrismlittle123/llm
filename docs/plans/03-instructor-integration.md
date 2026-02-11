@@ -16,7 +16,7 @@ Integrate Instructor for structured output with Pydantic validation on all LLM c
 
 ```python
 from pydantic import BaseModel
-from palindrom_ai.llm import extract, aextract
+from progression_labs.llm import extract, aextract
 
 class User(BaseModel):
     name: str
@@ -43,7 +43,7 @@ user = await extract(
 ## Implementation
 
 ```python
-# src/palindrom_ai/llm/structured.py
+# src/progression_labs/llm/structured.py
 
 from typing import TypeVar
 import instructor
@@ -99,7 +99,7 @@ async def extract(
 ## Streaming Partial Objects
 
 ```python
-# src/palindrom_ai/llm/structured.py
+# src/progression_labs/llm/structured.py
 
 from collections.abc import AsyncIterator
 from instructor import Partial
@@ -198,7 +198,7 @@ user = await extract(
 
 import pytest
 from pydantic import BaseModel
-from palindrom_ai.llm import extract
+from progression_labs.llm import extract
 
 class SimpleUser(BaseModel):
     name: str

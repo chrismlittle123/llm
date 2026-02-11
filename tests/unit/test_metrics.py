@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from palindrom_ai.llm import (
+from progression_labs.llm import (
     MetricsBridge,
     collect_metrics_once,
     init_metrics_bridge,
@@ -32,7 +32,7 @@ class TestMetricsBridge:
 
     def test_setup_langfuse_requires_credentials(self):
         """Test that _setup_langfuse requires credentials."""
-        from palindrom_ai.llm.config import LLMSettings
+        from progression_labs.llm.config import LLMSettings
 
         bridge = MetricsBridge()
         # Mock settings with no credentials
@@ -41,14 +41,14 @@ class TestMetricsBridge:
             langfuse_secret_key=None,
         )
         with (
-            patch("palindrom_ai.llm.metrics.get_settings", return_value=mock_settings),
+            patch("progression_labs.llm.metrics.get_settings", return_value=mock_settings),
             pytest.raises(ValueError, match="LANGFUSE_PUBLIC_KEY"),
         ):
             bridge._setup_langfuse()
 
     def test_setup_langfuse_requires_secret_key(self):
         """Test that _setup_langfuse requires secret key."""
-        from palindrom_ai.llm.config import LLMSettings
+        from progression_labs.llm.config import LLMSettings
 
         bridge = MetricsBridge()
         # Mock settings with only public key
@@ -57,7 +57,7 @@ class TestMetricsBridge:
             langfuse_secret_key=None,
         )
         with (
-            patch("palindrom_ai.llm.metrics.get_settings", return_value=mock_settings),
+            patch("progression_labs.llm.metrics.get_settings", return_value=mock_settings),
             pytest.raises(ValueError, match="LANGFUSE_SECRET_KEY"),
         ):
             bridge._setup_langfuse()
@@ -182,17 +182,17 @@ class TestInitMetricsBridge:
 
     def setup_method(self):
         """Reset global bridge before each test."""
-        import palindrom_ai.llm.metrics
+        import progression_labs.llm.metrics
 
-        palindrom_ai.llm.metrics._bridge = None
+        progression_labs.llm.metrics._bridge = None
 
     def teardown_method(self):
         """Clean up global bridge after each test."""
-        import palindrom_ai.llm.metrics
+        import progression_labs.llm.metrics
 
-        palindrom_ai.llm.metrics._bridge = None
+        progression_labs.llm.metrics._bridge = None
 
-    @patch("palindrom_ai.llm.metrics.MetricsBridge.start")
+    @patch("progression_labs.llm.metrics.MetricsBridge.start")
     def test_init_metrics_bridge_creates_instance(self, mock_start):
         """Test that init_metrics_bridge creates a MetricsBridge instance."""
         with patch.dict(
@@ -208,7 +208,7 @@ class TestInitMetricsBridge:
             assert bridge.lookback_window == 120.0
             mock_start.assert_called_once()
 
-    @patch("palindrom_ai.llm.metrics.MetricsBridge.start")
+    @patch("progression_labs.llm.metrics.MetricsBridge.start")
     def test_init_metrics_bridge_returns_existing(self, mock_start):
         """Test that init_metrics_bridge returns existing instance if already initialized."""
         with patch.dict(
@@ -239,15 +239,15 @@ class TestCollectMetricsOnce:
                     "LANGFUSE_SECRET_KEY": "sk-test",
                 },
             ),
-            patch("palindrom_ai.llm.metrics.MetricsBridge._setup_otel") as mock_setup_otel,
-            patch("palindrom_ai.llm.metrics.MetricsBridge._setup_langfuse") as mock_setup_langfuse,
-            patch("palindrom_ai.llm.metrics.MetricsBridge._collect_once") as mock_collect,
+            patch("progression_labs.llm.metrics.MetricsBridge._setup_otel") as mock_setup_otel,
+            patch("progression_labs.llm.metrics.MetricsBridge._setup_langfuse") as mock_setup_langfuse,
+            patch("progression_labs.llm.metrics.MetricsBridge._collect_once") as mock_collect,
         ):
             # Reset settings cache for test
-            import palindrom_ai.llm.config
+            import progression_labs.llm.config
 
-            old_settings = palindrom_ai.llm.config._settings
-            palindrom_ai.llm.config._settings = None
+            old_settings = progression_labs.llm.config._settings
+            progression_labs.llm.config._settings = None
 
             try:
                 await collect_metrics_once()
@@ -255,7 +255,7 @@ class TestCollectMetricsOnce:
                 mock_setup_otel.assert_called_once()
                 mock_collect.assert_called_once()
             finally:
-                palindrom_ai.llm.config._settings = old_settings
+                progression_labs.llm.config._settings = old_settings
 
 
 class TestStopMetricsBridge:
@@ -263,15 +263,15 @@ class TestStopMetricsBridge:
 
     def setup_method(self):
         """Reset global bridge before each test."""
-        import palindrom_ai.llm.metrics
+        import progression_labs.llm.metrics
 
-        palindrom_ai.llm.metrics._bridge = None
+        progression_labs.llm.metrics._bridge = None
 
     def teardown_method(self):
         """Clean up global bridge after each test."""
-        import palindrom_ai.llm.metrics
+        import progression_labs.llm.metrics
 
-        palindrom_ai.llm.metrics._bridge = None
+        progression_labs.llm.metrics._bridge = None
 
     @pytest.mark.asyncio
     async def test_stop_metrics_bridge_no_bridge(self):
@@ -281,7 +281,7 @@ class TestStopMetricsBridge:
     @pytest.mark.asyncio
     async def test_stop_metrics_bridge_stops_bridge(self):
         """Test that stop_metrics_bridge stops the running bridge."""
-        import palindrom_ai.llm.metrics
+        import progression_labs.llm.metrics
 
         mock_bridge = MagicMock()
         mock_bridge.stop = MagicMock(return_value=None)
@@ -291,36 +291,36 @@ class TestStopMetricsBridge:
             pass
 
         mock_bridge.stop = async_stop
-        palindrom_ai.llm.metrics._bridge = mock_bridge
+        progression_labs.llm.metrics._bridge = mock_bridge
 
         await stop_metrics_bridge()
-        assert palindrom_ai.llm.metrics._bridge is None
+        assert progression_labs.llm.metrics._bridge is None
 
 
 class TestLazyImports:
     """Tests for lazy imports from __init__.py."""
 
     def test_metrics_bridge_import(self):
-        """Test that MetricsBridge can be imported from palindrom_ai.llm."""
-        from palindrom_ai.llm import MetricsBridge
+        """Test that MetricsBridge can be imported from progression_labs.llm."""
+        from progression_labs.llm import MetricsBridge
 
         assert MetricsBridge is not None
 
     def test_init_metrics_bridge_import(self):
-        """Test that init_metrics_bridge can be imported from palindrom_ai.llm."""
-        from palindrom_ai.llm import init_metrics_bridge
+        """Test that init_metrics_bridge can be imported from progression_labs.llm."""
+        from progression_labs.llm import init_metrics_bridge
 
         assert init_metrics_bridge is not None
 
     def test_collect_metrics_once_import(self):
-        """Test that collect_metrics_once can be imported from palindrom_ai.llm."""
-        from palindrom_ai.llm import collect_metrics_once
+        """Test that collect_metrics_once can be imported from progression_labs.llm."""
+        from progression_labs.llm import collect_metrics_once
 
         assert collect_metrics_once is not None
 
     def test_stop_metrics_bridge_import(self):
-        """Test that stop_metrics_bridge can be imported from palindrom_ai.llm."""
-        from palindrom_ai.llm import stop_metrics_bridge
+        """Test that stop_metrics_bridge can be imported from progression_labs.llm."""
+        from progression_labs.llm import stop_metrics_bridge
 
         assert stop_metrics_bridge is not None
 
@@ -330,17 +330,17 @@ class TestConfigFields:
 
     def test_otlp_config_defaults(self):
         """Test that OTLP config fields have correct defaults."""
-        from palindrom_ai.llm.config import LLMSettings
+        from progression_labs.llm.config import LLMSettings
 
         settings = LLMSettings()
         assert settings.otlp_endpoint == "http://localhost:4317"
         assert settings.is_otlp_insecure is True
-        assert settings.service_name == "palindrom-llm"
+        assert settings.service_name == "progression-labs-llm"
         assert settings.service_environment == "development"
 
     def test_otlp_config_from_env(self):
         """Test that OTLP config fields can be set from environment."""
-        from palindrom_ai.llm.config import LLMSettings
+        from progression_labs.llm.config import LLMSettings
 
         with patch.dict(
             os.environ,

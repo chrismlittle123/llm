@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from palindrom_ai.llm.eval import (
+from progression_labs.llm.eval import (
     BatchEvalResult,
     EvalResult,
     EvalTestCase,
@@ -69,7 +69,7 @@ class TestEvaluate:
 
         with (
             patch(
-                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                "progression_labs.llm.eval.evaluate._get_metric_instance",
                 return_value=MagicMock(),
             ),
             patch(
@@ -105,7 +105,7 @@ class TestEvaluate:
 
         with (
             patch(
-                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                "progression_labs.llm.eval.evaluate._get_metric_instance",
                 return_value=MagicMock(),
             ),
             patch(
@@ -139,7 +139,7 @@ class TestEvaluate:
 
         with (
             patch(
-                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                "progression_labs.llm.eval.evaluate._get_metric_instance",
                 return_value=MagicMock(),
             ),
             patch(
@@ -173,7 +173,7 @@ class TestEvaluate:
 
         with (
             patch(
-                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                "progression_labs.llm.eval.evaluate._get_metric_instance",
                 return_value=MagicMock(),
             ),
             patch(
@@ -209,7 +209,7 @@ class TestRunEval:
 
         with (
             patch(
-                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                "progression_labs.llm.eval.evaluate._get_metric_instance",
                 return_value=MagicMock(),
             ),
             patch(
@@ -256,7 +256,7 @@ class TestRunEval:
 
         with (
             patch(
-                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                "progression_labs.llm.eval.evaluate._get_metric_instance",
                 return_value=MagicMock(),
             ),
             patch(
@@ -309,7 +309,7 @@ class TestLlmTest:
 
         with (
             patch(
-                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                "progression_labs.llm.eval.evaluate._get_metric_instance",
                 return_value=MagicMock(),
             ),
             patch(
@@ -340,7 +340,7 @@ class TestLlmTest:
 
         with (
             patch(
-                "palindrom_ai.llm.eval.evaluate._get_metric_instance",
+                "progression_labs.llm.eval.evaluate._get_metric_instance",
                 return_value=MagicMock(),
             ),
             patch(

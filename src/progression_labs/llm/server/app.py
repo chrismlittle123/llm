@@ -1,4 +1,4 @@
-"""FastAPI HTTP gateway for the Palindrom AI LLM SDK."""
+"""FastAPI HTTP gateway for the Progression Labs LLM SDK."""
 
 import importlib
 import json
@@ -16,8 +16,8 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from palindrom_ai.llm.server.models import ErrorDetail, ErrorResponse
-from palindrom_ai.llm.server.routes import router
+from progression_labs.llm.server.models import ErrorDetail, ErrorResponse
+from progression_labs.llm.server.routes import router
 
 REQUEST_ID_PREFIX = "req_"
 
@@ -33,7 +33,7 @@ class _JSONFormatter(logging.Formatter):
             "timestamp": datetime.now(UTC).isoformat(),
             "level": record.levelname.lower(),
             "message": record.getMessage(),
-            "service": os.getenv("SERVICE_NAME", "palindrom-llm"),
+            "service": os.getenv("SERVICE_NAME", "progression-labs-llm"),
             "environment": os.getenv("SERVICE_ENVIRONMENT", "development"),
             "logger": record.name,
         }
@@ -82,7 +82,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     _configure_logging()
     _resolve_secrets()
     try:
-        from palindrom_ai.llm.observability import init_observability
+        from progression_labs.llm.observability import init_observability
 
         init_observability()
         logger.info("Langfuse observability initialized")
@@ -90,14 +90,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         logger.warning("Observability not initialized: %s", exc)
     yield
     try:
-        from palindrom_ai.llm.observability import flush_traces
+        from progression_labs.llm.observability import flush_traces
 
         flush_traces()
     except Exception:
         pass
 
 
-app = FastAPI(title="Palindrom AI LLM Gateway", lifespan=lifespan)
+app = FastAPI(title="Progression Labs LLM Gateway", lifespan=lifespan)
 
 # --- CORS ---
 cors_origins = os.getenv("LLM_CORS_ORIGINS", "*").split(",")

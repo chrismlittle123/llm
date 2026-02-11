@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "src/palindrom_ai/llm/server/**"
+      - "src/progression_labs/llm/server/**"
 
 jobs:
   generate:

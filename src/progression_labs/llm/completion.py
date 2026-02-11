@@ -14,7 +14,7 @@ from litellm import ModelResponse
 from litellm import acompletion as litellm_acompletion
 from pydantic import BaseModel
 
-from palindrom_ai.llm.config import LLMSettings, get_settings
+from progression_labs.llm.config import LLMSettings, get_settings
 
 
 class UsageStats(BaseModel):

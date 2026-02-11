@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic import BaseModel
 
-from palindrom_ai.llm import extract, extract_stream
+from progression_labs.llm import extract, extract_stream
 
 
 class SimpleUser(BaseModel):
@@ -23,7 +23,7 @@ class TestExtractUnit:
         """Prompt is converted to messages."""
         fake_user = SimpleUser(name="Alice", age=30)
         with patch(
-            "palindrom_ai.llm.structured._client.chat.completions.create",
+            "progression_labs.llm.structured._client.chat.completions.create",
             new_callable=AsyncMock,
             return_value=fake_user,
         ) as mock_create:
@@ -47,7 +47,7 @@ class TestExtractUnit:
             {"role": "user", "content": "Bob is 25."},
         ]
         with patch(
-            "palindrom_ai.llm.structured._client.chat.completions.create",
+            "progression_labs.llm.structured._client.chat.completions.create",
             new_callable=AsyncMock,
             return_value=fake_user,
         ) as mock_create:
@@ -75,7 +75,7 @@ class TestExtractUnit:
         """Extra kwargs are forwarded to instructor."""
         fake_user = SimpleUser(name="X", age=1)
         with patch(
-            "palindrom_ai.llm.structured._client.chat.completions.create",
+            "progression_labs.llm.structured._client.chat.completions.create",
             new_callable=AsyncMock,
             return_value=fake_user,
         ) as mock_create:

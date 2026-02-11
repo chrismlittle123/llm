@@ -7,7 +7,7 @@ Requires API keys (loaded via conftest.py GCP Secret Manager fixture).
 import pytest
 from fastapi.testclient import TestClient
 
-from palindrom_ai.llm.server.app import app
+from progression_labs.llm.server.app import app
 
 pytestmark = pytest.mark.integration
 

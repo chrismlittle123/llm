@@ -6,7 +6,7 @@ These tests call real LLM providers. Requires API keys
 
 import pytest
 
-from palindrom_ai.llm import complete, get_cost, get_usage, stream
+from progression_labs.llm import complete, get_cost, get_usage, stream
 
 pytestmark = pytest.mark.integration
 

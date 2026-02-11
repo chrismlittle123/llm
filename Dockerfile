@@ -18,4 +18,4 @@ USER appuser
 
 EXPOSE 8000
 
-ENTRYPOINT ["uv", "run", "uvicorn", "palindrom_ai.llm.server.app:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["uv", "run", "uvicorn", "progression_labs.llm.server.app:app", "--host", "0.0.0.0", "--port", "8000"]

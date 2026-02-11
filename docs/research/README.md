@@ -1,6 +1,6 @@
 # LLM Package Research
 
-Research documentation for the `@palindrom-ai/llm` Python package.
+Research documentation for the `@progression-labs/llm` Python package.
 
 ## Requirements Summary
 
@@ -27,7 +27,7 @@ Based on initial discovery:
 
 ```
 ┌───────────────────────────────────────────────────────────┐
-│                    @palindrom-ai/llm                       │
+│                    @progression-labs/llm                       │
 ├───────────────────────────────────────────────────────────┤
 │  LiteLLM          │  Unified API for all providers        │
 │  Instructor       │  Structured output + validation       │
@@ -83,7 +83,7 @@ Based on initial discovery:
 ```python
 # High-level usage pattern
 
-from palindrom_ai.llm import complete, embed, evaluate
+from progression_labs.llm import complete, embed, evaluate
 
 # Structured completion (all calls return Pydantic models)
 result = await complete(

@@ -4,10 +4,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from palindrom_ai.llm import complete, get_cost, stream
-from palindrom_ai.llm.completion import RetryConfig, UsageStats
-from palindrom_ai.llm.completion import get_usage as _get_usage
-from palindrom_ai.llm.config import LLMSettings
+from progression_labs.llm import complete, get_cost, stream
+from progression_labs.llm.completion import RetryConfig, UsageStats
+from progression_labs.llm.completion import get_usage as _get_usage
+from progression_labs.llm.config import LLMSettings
 
 
 class TestRetryConfig:
@@ -45,7 +45,7 @@ class TestComplete:
     async def test_complete_calls_litellm(self):
         mock_response = MagicMock()
         with patch(
-            "palindrom_ai.llm.completion.litellm_acompletion",
+            "progression_labs.llm.completion.litellm_acompletion",
             new_callable=AsyncMock,
             return_value=mock_response,
         ) as mock_acomp:
@@ -64,7 +64,7 @@ class TestComplete:
     async def test_complete_metadata_building(self):
         mock_response = MagicMock()
         with patch(
-            "palindrom_ai.llm.completion.litellm_acompletion",
+            "progression_labs.llm.completion.litellm_acompletion",
             new_callable=AsyncMock,
             return_value=mock_response,
         ) as mock_acomp:
@@ -87,7 +87,7 @@ class TestComplete:
     async def test_complete_max_retries_override(self):
         mock_response = MagicMock()
         with patch(
-            "palindrom_ai.llm.completion.litellm_acompletion",
+            "progression_labs.llm.completion.litellm_acompletion",
             new_callable=AsyncMock,
             return_value=mock_response,
         ) as mock_acomp:
@@ -104,7 +104,7 @@ class TestComplete:
     async def test_complete_custom_timeout(self):
         mock_response = MagicMock()
         with patch(
-            "palindrom_ai.llm.completion.litellm_acompletion",
+            "progression_labs.llm.completion.litellm_acompletion",
             new_callable=AsyncMock,
             return_value=mock_response,
         ) as mock_acomp:
@@ -121,7 +121,7 @@ class TestComplete:
     async def test_complete_no_metadata_when_empty(self):
         mock_response = MagicMock()
         with patch(
-            "palindrom_ai.llm.completion.litellm_acompletion",
+            "progression_labs.llm.completion.litellm_acompletion",
             new_callable=AsyncMock,
             return_value=mock_response,
         ) as mock_acomp:
@@ -155,7 +155,7 @@ class TestStream:
                 yield c
 
         with patch(
-            "palindrom_ai.llm.completion.litellm_acompletion",
+            "progression_labs.llm.completion.litellm_acompletion",
             new_callable=AsyncMock,
             return_value=mock_chunks(),
         ):
@@ -177,7 +177,7 @@ class TestStream:
                 yield _
 
         with patch(
-            "palindrom_ai.llm.completion.litellm_acompletion",
+            "progression_labs.llm.completion.litellm_acompletion",
             new_callable=AsyncMock,
             return_value=mock_chunks(),
         ) as mock_acomp:
@@ -200,7 +200,7 @@ class TestGetCost:
 
     def test_get_cost_delegates_to_litellm(self):
         mock_response = MagicMock()
-        with patch("palindrom_ai.llm.completion.litellm.completion_cost", return_value=0.005):
+        with patch("progression_labs.llm.completion.litellm.completion_cost", return_value=0.005):
             cost = get_cost(mock_response)
         assert cost == 0.005
 

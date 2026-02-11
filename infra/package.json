@@ -8,7 +8,7 @@
   "dependencies": {
     "@pulumi/gcp": "^8.0.0",
     "@pulumi/pulumi": "^3.0.0",
-    "@palindrom-ai/infra": "github:chrismlittle123/infra"
+    "@progression-labs/infra": "github:chrismlittle123/infra"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

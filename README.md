@@ -1,17 +1,17 @@
-# @palindrom-ai/llm
+# @progression-labs/llm
 
-Unified Python LLM SDK for Palindrom services.
+Unified Python LLM SDK for Progression Labs services.
 
 ## Installation
 
 ```bash
-pip install palindrom-ai-llm
+pip install progression-labs-llm
 ```
 
 With the HTTP gateway:
 
 ```bash
-pip install "palindrom-ai-llm[server]"
+pip install "progression-labs-llm[server]"
 ```
 
 For development:
@@ -42,7 +42,7 @@ When Langfuse v3 support is added to LiteLLM, this constraint will be relaxed. T
 ### Python SDK
 
 ```python
-from palindrom_ai.llm import complete, extract
+from progression_labs.llm import complete, extract
 from pydantic import BaseModel
 
 # Simple completion
@@ -267,7 +267,7 @@ The gateway is deployed to GCP Cloud Run via GitHub Actions. Pushing to `main` t
 3. **Build and Push** — Docker image pushed to Artifact Registry
 4. **Update Service** — Cloud Run updated to the new image
 
-Infrastructure is defined in `infra/` using Pulumi with the `@palindrom-ai/infra` package.
+Infrastructure is defined in `infra/` using Pulumi with the `@progression-labs/infra` package.
 
 To deploy manually:
 

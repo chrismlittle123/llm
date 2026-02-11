@@ -29,7 +29,7 @@ def init_observability() -> None:
         ValueError: If required environment variables are not set
 
     Example:
-        >>> from palindrom_ai.llm import init_observability
+        >>> from progression_labs.llm import init_observability
         >>> init_observability()  # Call once at app startup
     """
     if not os.getenv("LANGFUSE_PUBLIC_KEY"):

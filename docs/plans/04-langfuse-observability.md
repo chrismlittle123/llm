@@ -15,7 +15,7 @@ Integrate Langfuse for LLM-specific observability including traces, prompt versi
 ## API Design
 
 ```python
-from palindrom_ai.llm import init_observability, trace
+from progression_labs.llm import init_observability, trace
 
 # Initialize at app startup
 init_observability()
@@ -40,7 +40,7 @@ async def handle_chat(user_id: str, message: str) -> str:
 ## Implementation
 
 ```python
-# src/palindrom_ai/llm/observability.py
+# src/progression_labs/llm/observability.py
 
 import os
 import litellm
@@ -125,7 +125,7 @@ def set_trace_session(session_id: str) -> None:
 ## Prompt Management
 
 ```python
-# src/palindrom_ai/llm/prompts.py
+# src/progression_labs/llm/prompts.py
 
 from langfuse import Langfuse
 
@@ -180,7 +180,7 @@ def get_prompt_with_vars(
 ## Usage Example
 
 ```python
-from palindrom_ai.llm import (
+from progression_labs.llm import (
     init_observability,
     trace,
     complete,
@@ -226,7 +226,7 @@ LANGFUSE_HOST=https://cloud.langfuse.com
 
 import pytest
 from unittest.mock import patch
-from palindrom_ai.llm import init_observability, trace
+from progression_labs.llm import init_observability, trace
 
 def test_init_requires_env_vars():
     with patch.dict("os.environ", {}, clear=True):

@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from fastapi.testclient import TestClient
 
-from palindrom_ai.llm.server.app import _JSONFormatter, _resolve_secrets, app
+from progression_labs.llm.server.app import _JSONFormatter, _resolve_secrets, app
 
 client = TestClient(app, raise_server_exceptions=False)
 
@@ -150,7 +150,7 @@ class TestResolveSecrets:
         with (
             patch.dict(os.environ, env, clear=True),
             patch("importlib.import_module", side_effect=selective_import),
-            patch("palindrom_ai.llm.server.app.logger") as mock_logger,
+            patch("progression_labs.llm.server.app.logger") as mock_logger,
         ):
             _resolve_secrets()
 
@@ -193,7 +193,7 @@ def _mock_model_response(content: str = "Hello!") -> MagicMock:
     return resp
 
 
-@patch("palindrom_ai.llm.server.routes.complete", new_callable=AsyncMock)
+@patch("progression_labs.llm.server.routes.complete", new_callable=AsyncMock)
 def test_complete(mock_complete: AsyncMock):
     mock_complete.return_value = _mock_model_response("Hi there")
     resp = client.post(
@@ -206,7 +206,7 @@ def test_complete(mock_complete: AsyncMock):
     assert data["usage"]["totalTokens"] == 15
 
 
-@patch("palindrom_ai.llm.server.routes.complete", new_callable=AsyncMock)
+@patch("progression_labs.llm.server.routes.complete", new_callable=AsyncMock)
 def test_complete_has_request_id(mock_complete: AsyncMock):
     mock_complete.return_value = _mock_model_response()
     resp = client.post(
@@ -222,7 +222,7 @@ def test_complete_invalid_body():
     assert resp.status_code == 422
 
 
-@patch("palindrom_ai.llm.server.routes.complete", new_callable=AsyncMock)
+@patch("progression_labs.llm.server.routes.complete", new_callable=AsyncMock)
 def test_complete_llm_error(mock_complete: AsyncMock):
     """LLM exception returns 500 with structured error."""
     mock_complete.side_effect = RuntimeError("provider down")
@@ -242,7 +242,7 @@ def test_complete_llm_error(mock_complete: AsyncMock):
 # ---------------------------------------------------------------------------
 
 
-@patch("palindrom_ai.llm.server.routes.extract", new_callable=AsyncMock)
+@patch("progression_labs.llm.server.routes.extract", new_callable=AsyncMock)
 def test_extract(mock_extract: AsyncMock):
     fake_result = MagicMock()
     fake_result.model_dump.return_value = {"name": "Alice", "age": 30}
@@ -264,7 +264,7 @@ def test_extract(mock_extract: AsyncMock):
     assert data["data"] == {"name": "Alice", "age": 30}
 
 
-@patch("palindrom_ai.llm.server.routes.extract", new_callable=AsyncMock)
+@patch("progression_labs.llm.server.routes.extract", new_callable=AsyncMock)
 def test_extract_has_request_id(mock_extract: AsyncMock):
     fake_result = MagicMock()
     fake_result.model_dump.return_value = {"x": 1}
@@ -302,7 +302,7 @@ def test_cors_headers():
 # ---------------------------------------------------------------------------
 
 
-@patch("palindrom_ai.llm.server.routes.complete", new_callable=AsyncMock)
+@patch("progression_labs.llm.server.routes.complete", new_callable=AsyncMock)
 def test_value_error_returns_400(mock_complete: AsyncMock):
     mock_complete.side_effect = ValueError("bad model name")
     resp = client.post(

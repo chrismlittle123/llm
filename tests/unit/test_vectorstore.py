@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from palindrom_ai.llm.rag import SearchResult, VectorStore
+from progression_labs.llm.rag import SearchResult, VectorStore
 
 
 class TestVectorStoreInitialization:
@@ -47,11 +47,11 @@ class TestVectorStoreInitialization:
         # return high similarity scores (close to 1.0)
         mock_embedding = [1.0, 0.0, 0.0]  # Unit vector
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_cosine")
             await store.add(documents=["test"], ids=["id1"])
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
+        with patch("progression_labs.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
             results = await store.search("test", top_k=1)
 
         # With cosine similarity, identical vectors should have score close to 1.0
@@ -68,7 +68,7 @@ class TestVectorStorePersistence:
 
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create store and add data
-            with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+            with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
                 store1 = VectorStore(
                     collection_name="persist_test",
                     persist_directory=tmpdir,
@@ -88,7 +88,7 @@ class TestVectorStorePersistence:
         """Test different collection names are isolated."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store1 = VectorStore(collection_name="collection_a")
             store2 = VectorStore(collection_name="collection_b")
 
@@ -106,7 +106,7 @@ class TestVectorStoreAdd:
         """Test adding a single document."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_add_single")
             await store.add(documents=["hello"], ids=["id1"])
 
@@ -117,7 +117,7 @@ class TestVectorStoreAdd:
         """Test adding multiple documents at once."""
         mock_embeddings = [[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=mock_embeddings):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=mock_embeddings):
             store = VectorStore(collection_name="test_add_multiple")
             await store.add(
                 documents=["doc1", "doc2", "doc3"],
@@ -131,7 +131,7 @@ class TestVectorStoreAdd:
         """Test adding documents with metadata."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_add_meta")
             await store.add(
                 documents=["test"],
@@ -146,7 +146,7 @@ class TestVectorStoreAdd:
         """Test adding duplicate ID is silently ignored by ChromaDB."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_duplicate")
             await store.add(documents=["doc1"], ids=["id1"])
 
@@ -162,7 +162,7 @@ class TestVectorStoreAdd:
         mock_embedding = [0.1, 0.2, 0.3]
 
         with patch(
-            "palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]
+            "progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]
         ) as mock_embed:
             store = VectorStore(
                 collection_name="test_embed_model",
@@ -179,7 +179,7 @@ class TestVectorStoreSearch:
     @pytest.mark.asyncio
     async def test_search_empty_store_returns_empty_list(self):
         """Test searching empty store returns empty list."""
-        with patch("palindrom_ai.llm.rag.vectorstore.embed_single", return_value=[0.1, 0.2]):
+        with patch("progression_labs.llm.rag.vectorstore.embed_single", return_value=[0.1, 0.2]):
             store = VectorStore(collection_name="test_search_empty")
             results = await store.search("query", top_k=5)
 
@@ -190,11 +190,11 @@ class TestVectorStoreSearch:
         """Test search returns list of SearchResult objects."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_search_type")
             await store.add(documents=["test doc"], ids=["id1"])
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
+        with patch("progression_labs.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
             results = await store.search("test", top_k=1)
 
         assert len(results) == 1
@@ -205,11 +205,11 @@ class TestVectorStoreSearch:
         """Test search result contains the original document text."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_search_doc")
             await store.add(documents=["Hello world"], ids=["id1"])
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
+        with patch("progression_labs.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
             results = await store.search("hello", top_k=1)
 
         assert results[0].document == "Hello world"
@@ -219,11 +219,11 @@ class TestVectorStoreSearch:
         """Test search result contains the document ID."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_search_id")
             await store.add(documents=["test"], ids=["my_doc_id"])
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
+        with patch("progression_labs.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
             results = await store.search("test", top_k=1)
 
         assert results[0].id == "my_doc_id"
@@ -233,7 +233,7 @@ class TestVectorStoreSearch:
         """Test search result contains document metadata."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_search_meta")
             await store.add(
                 documents=["test"],
@@ -241,7 +241,7 @@ class TestVectorStoreSearch:
                 metadata=[{"source": "file.txt", "page": 5}],
             )
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
+        with patch("progression_labs.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
             results = await store.search("test", top_k=1)
 
         assert results[0].metadata == {"source": "file.txt", "page": 5}
@@ -251,11 +251,11 @@ class TestVectorStoreSearch:
         """Test search result score is similarity (0-1) not distance."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_search_score")
             await store.add(documents=["test"], ids=["id1"])
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
+        with patch("progression_labs.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
             results = await store.search("test", top_k=1)
 
         # Score should be high (close to 1) for identical embeddings
@@ -267,14 +267,14 @@ class TestVectorStoreSearch:
         """Test search returns at most top_k results."""
         mock_embeddings = [[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=mock_embeddings):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=mock_embeddings):
             store = VectorStore(collection_name="test_topk")
             await store.add(
                 documents=["doc1", "doc2", "doc3"],
                 ids=["id1", "id2", "id3"],
             )
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed_single", return_value=[0.1, 0.2]):
+        with patch("progression_labs.llm.rag.vectorstore.embed_single", return_value=[0.1, 0.2]):
             results = await store.search("query", top_k=2)
 
         assert len(results) == 2
@@ -284,11 +284,11 @@ class TestVectorStoreSearch:
         """Test search with top_k larger than number of documents."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_topk_large")
             await store.add(documents=["only doc"], ids=["id1"])
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
+        with patch("progression_labs.llm.rag.vectorstore.embed_single", return_value=mock_embedding):
             results = await store.search("query", top_k=100)
 
         assert len(results) == 1  # Only 1 doc exists
@@ -298,7 +298,7 @@ class TestVectorStoreSearch:
         """Test search with metadata where filter."""
         mock_embeddings = [[0.1, 0.2], [0.1, 0.2]]  # Same embeddings
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=mock_embeddings):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=mock_embeddings):
             store = VectorStore(collection_name="test_where")
             await store.add(
                 documents=["python doc", "javascript doc"],
@@ -306,7 +306,7 @@ class TestVectorStoreSearch:
                 metadata=[{"lang": "python"}, {"lang": "javascript"}],
             )
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed_single", return_value=[0.1, 0.2]):
+        with patch("progression_labs.llm.rag.vectorstore.embed_single", return_value=[0.1, 0.2]):
             results = await store.search(
                 "programming",
                 top_k=10,
@@ -325,7 +325,7 @@ class TestVectorStoreDelete:
         """Test deleting a single document."""
         mock_embedding = [0.1, 0.2, 0.3]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_delete_single")
             await store.add(documents=["doc"], ids=["id1"])
             assert store.count() == 1
@@ -338,7 +338,7 @@ class TestVectorStoreDelete:
         """Test deleting multiple documents at once."""
         mock_embeddings = [[0.1], [0.2], [0.3]]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=mock_embeddings):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=mock_embeddings):
             store = VectorStore(collection_name="test_delete_multi")
             await store.add(
                 documents=["a", "b", "c"],
@@ -366,7 +366,7 @@ class TestVectorStoreClear:
         """Test clear removes all documents from collection."""
         mock_embeddings = [[0.1], [0.2], [0.3]]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=mock_embeddings):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=mock_embeddings):
             store = VectorStore(collection_name="test_clear_all")
             await store.add(
                 documents=["a", "b", "c"],
@@ -382,7 +382,7 @@ class TestVectorStoreClear:
         """Test store can be reused after clear."""
         mock_embedding = [0.1, 0.2]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=[mock_embedding]):
             store = VectorStore(collection_name="test_clear_reuse")
             await store.add(documents=["first"], ids=["id1"])
             store.clear()
@@ -404,7 +404,7 @@ class TestVectorStoreCount:
         """Test count reflects added documents."""
         mock_embeddings = [[0.1], [0.2]]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=mock_embeddings):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=mock_embeddings):
             store = VectorStore(collection_name="test_count_add")
             await store.add(documents=["a", "b"], ids=["1", "2"])
 
@@ -415,7 +415,7 @@ class TestVectorStoreCount:
         """Test count reflects deleted documents."""
         mock_embeddings = [[0.1], [0.2]]
 
-        with patch("palindrom_ai.llm.rag.vectorstore.embed", return_value=mock_embeddings):
+        with patch("progression_labs.llm.rag.vectorstore.embed", return_value=mock_embeddings):
             store = VectorStore(collection_name="test_count_delete")
             await store.add(documents=["a", "b"], ids=["1", "2"])
             await store.delete(ids=["1"])

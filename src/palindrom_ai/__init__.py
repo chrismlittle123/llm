@@ -1,1 +1,0 @@
-# Palindrom AI packages

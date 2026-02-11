@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Palindrom AI LLM Gateway",
+    "title": "Progression Labs LLM Gateway",
     "version": "0.1.0"
   },
   "paths": {

@@ -15,7 +15,7 @@ Integrate DeepEval for LLM evaluation and testing in CI/CD pipelines.
 ## API Design
 
 ```python
-from palindrom_ai.llm.eval import evaluate, run_eval, Metric
+from progression_labs.llm.eval import evaluate, run_eval, Metric
 
 # Simple evaluation
 result = await evaluate(
@@ -42,7 +42,7 @@ results = await run_eval(
 ### Metrics Enum
 
 ```python
-# src/palindrom_ai/llm/eval/metrics.py
+# src/progression_labs/llm/eval/metrics.py
 
 from enum import Enum
 
@@ -65,7 +65,7 @@ class Metric(str, Enum):
 ### Evaluation Functions
 
 ```python
-# src/palindrom_ai/llm/eval/evaluate.py
+# src/progression_labs/llm/eval/evaluate.py
 
 from dataclasses import dataclass
 from deepeval import evaluate as deepeval_evaluate
@@ -165,7 +165,7 @@ async def evaluate(
 ### Batch Evaluation
 
 ```python
-# src/palindrom_ai/llm/eval/batch.py
+# src/progression_labs/llm/eval/batch.py
 
 from dataclasses import dataclass
 from .evaluate import evaluate, EvalResult
@@ -226,7 +226,7 @@ async def run_eval(
 ### Pytest Integration
 
 ```python
-# src/palindrom_ai/llm/eval/pytest_plugin.py
+# src/progression_labs/llm/eval/pytest_plugin.py
 
 import pytest
 from .evaluate import evaluate
@@ -273,7 +273,7 @@ def llm_test(
 ## CLI Runner
 
 ```python
-# src/palindrom_ai/llm/eval/cli.py
+# src/progression_labs/llm/eval/cli.py
 
 import json
 import sys
@@ -310,7 +310,7 @@ async def main(test_file: str, output_format: str = "json"):
 # tests/test_eval.py
 
 import pytest
-from palindrom_ai.llm.eval import evaluate, run_eval, Metric
+from progression_labs.llm.eval import evaluate, run_eval, Metric
 
 @pytest.mark.asyncio
 async def test_evaluate_relevancy():
@@ -355,7 +355,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -e ".[dev]"
-      - run: python -m palindrom_ai.llm.eval.cli tests/eval_cases.json
+      - run: python -m progression_labs.llm.eval.cli tests/eval_cases.json
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 ```

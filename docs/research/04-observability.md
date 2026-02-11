@@ -90,7 +90,7 @@ OpenLLMetry provides automatic LLM instrumentation that exports to any OTel back
 from traceloop.sdk import Traceloop
 
 Traceloop.init(
-    app_name="palindrom-llm",
+    app_name="progression-labs-llm",
     api_endpoint="https://ingest.signoz.io:443",
     headers={"signoz-ingestion-key": "<your-key>"}
 )
@@ -266,7 +266,7 @@ LiteLLM → Phoenix (local)
 ## Implementation
 
 ```python
-# palindrom_ai/llm/observability.py
+# progression_labs/llm/observability.py
 
 import litellm
 import os

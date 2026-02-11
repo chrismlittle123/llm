@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
-import { defineConfig, createSecret, createContainer } from "@palindrom-ai/infra";
+import { defineConfig, createSecret, createContainer } from "@progression-labs/infra";
 
 // Get configuration
 const pulumiConfig = new pulumi.Config();
@@ -53,7 +53,7 @@ const artifactRegistry = new gcp.artifactregistry.Repository(`${namePrefix}-repo
 }, { dependsOn: enabledApis });
 
 // =============================================================================
-// Secrets (using @palindrom-ai/infra)
+// Secrets (using @progression-labs/infra)
 // =============================================================================
 const openaiKey = createSecret("openai-api-key");
 const anthropicKey = createSecret("anthropic-api-key");
@@ -61,7 +61,7 @@ const langfusePublicKey = createSecret("langfuse-public-key");
 const langfuseSecretKey = createSecret("langfuse-secret-key");
 
 // =============================================================================
-// Cloud Run Service (using @palindrom-ai/infra)
+// Cloud Run Service (using @progression-labs/infra)
 // =============================================================================
 const llmGateway = createContainer("api", {
   image: "gcr.io/cloudrun/hello", // Placeholder — updated after first push

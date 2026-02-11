@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-from palindrom_ai.llm.server.app import app
+from progression_labs.llm.server.app import app
 
 
 def main() -> None:

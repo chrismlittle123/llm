@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from palindrom_ai.llm.eval.batch import BatchEvalResult
-from palindrom_ai.llm.eval.cli import cli, main
+from progression_labs.llm.eval.batch import BatchEvalResult
+from progression_labs.llm.eval.cli import cli, main
 
 
 class TestMain:
@@ -29,7 +29,7 @@ class TestMain:
             total=1, passed=1, failed=0, pass_rate=1.0, results=[]
         )
         with patch(
-            "palindrom_ai.llm.eval.cli.run_eval", new_callable=AsyncMock, return_value=mock_result
+            "progression_labs.llm.eval.cli.run_eval", new_callable=AsyncMock, return_value=mock_result
         ):
             exit_code = await main(str(test_file))
 
@@ -52,7 +52,7 @@ class TestMain:
             total=2, passed=1, failed=1, pass_rate=0.5, results=[]
         )
         with patch(
-            "palindrom_ai.llm.eval.cli.run_eval", new_callable=AsyncMock, return_value=mock_result
+            "progression_labs.llm.eval.cli.run_eval", new_callable=AsyncMock, return_value=mock_result
         ):
             exit_code = await main(str(test_file))
 
@@ -73,12 +73,12 @@ class TestMain:
             total=1, passed=1, failed=0, pass_rate=1.0, results=[]
         )
         with patch(
-            "palindrom_ai.llm.eval.cli.run_eval", new_callable=AsyncMock, return_value=mock_result
+            "progression_labs.llm.eval.cli.run_eval", new_callable=AsyncMock, return_value=mock_result
         ) as mock_run:
             await main(str(test_file))
 
         # Verify default metric was used (positional args)
-        from palindrom_ai.llm.eval.metrics import Metric
+        from progression_labs.llm.eval.metrics import Metric
 
         call_args = mock_run.call_args
         # run_eval(test_cases, metrics, threshold) — all positional
@@ -97,7 +97,7 @@ class TestMain:
             total=2, passed=2, failed=0, pass_rate=1.0, results=[]
         )
         with patch(
-            "palindrom_ai.llm.eval.cli.run_eval", new_callable=AsyncMock, return_value=mock_result
+            "progression_labs.llm.eval.cli.run_eval", new_callable=AsyncMock, return_value=mock_result
         ):
             await main(str(test_file), output_format="json")
 
@@ -122,7 +122,7 @@ class TestMain:
             total=1, passed=1, failed=0, pass_rate=1.0, results=[]
         )
         with patch(
-            "palindrom_ai.llm.eval.cli.run_eval", new_callable=AsyncMock, return_value=mock_result
+            "progression_labs.llm.eval.cli.run_eval", new_callable=AsyncMock, return_value=mock_result
         ) as mock_run:
             await main(str(test_file))
 
@@ -138,7 +138,7 @@ class TestCli:
         with (
             patch("sys.argv", ["eval", "tests.json"]),
             patch(
-                "palindrom_ai.llm.eval.cli.main", new_callable=AsyncMock, return_value=0
+                "progression_labs.llm.eval.cli.main", new_callable=AsyncMock, return_value=0
             ) as mock_main,
             pytest.raises(SystemExit) as exc_info,
         ):
@@ -152,7 +152,7 @@ class TestCli:
         with (
             patch("sys.argv", ["eval", "tests.json"]),
             patch(
-                "palindrom_ai.llm.eval.cli.main", new_callable=AsyncMock, return_value=1
+                "progression_labs.llm.eval.cli.main", new_callable=AsyncMock, return_value=1
             ),
             pytest.raises(SystemExit) as exc_info,
         ):
