@@ -136,7 +136,7 @@
             ],
             "title": "Fallbacks"
           },
-          "max_retries": {
+          "maxRetries": {
             "anyOf": [
               {
                 "type": "integer"
@@ -145,7 +145,7 @@
                 "type": "null"
               }
             ],
-            "title": "Max Retries"
+            "title": "Maxretries"
           },
           "timeout": {
             "anyOf": [
@@ -173,15 +173,19 @@
             "title": "Content"
           },
           "usage": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Usage"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UsageResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
         "required": [
-          "content",
-          "usage"
+          "content"
         ],
         "title": "CompletionResponse"
       },
@@ -219,21 +223,21 @@
             ],
             "title": "Prompt"
           },
-          "response_schema": {
+          "responseSchema": {
             "additionalProperties": true,
             "type": "object",
-            "title": "Response Schema"
+            "title": "Responseschema"
           },
-          "max_retries": {
+          "maxRetries": {
             "type": "integer",
-            "title": "Max Retries",
+            "title": "Maxretries",
             "default": 3
           }
         },
         "type": "object",
         "required": [
           "model",
-          "response_schema"
+          "responseSchema"
         ],
         "title": "ExtractionRequest"
       },
@@ -245,15 +249,19 @@
             "title": "Data"
           },
           "usage": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Usage"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UsageResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
         "required": [
-          "data",
-          "usage"
+          "data"
         ],
         "title": "ExtractionResponse"
       },
@@ -269,6 +277,30 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "UsageResponse": {
+        "properties": {
+          "promptTokens": {
+            "type": "integer",
+            "title": "Prompttokens"
+          },
+          "completionTokens": {
+            "type": "integer",
+            "title": "Completiontokens"
+          },
+          "totalTokens": {
+            "type": "integer",
+            "title": "Totaltokens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "promptTokens",
+          "completionTokens",
+          "totalTokens"
+        ],
+        "title": "UsageResponse",
+        "description": "Token usage statistics."
       },
       "ValidationError": {
         "properties": {
