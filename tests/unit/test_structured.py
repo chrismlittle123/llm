@@ -1,11 +1,11 @@
-"""Tests for structured output extraction functionality."""
+"""Unit tests for structured output extraction functionality."""
+
+from unittest.mock import AsyncMock, patch
 
 import pytest
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel
 
 from palindrom_ai.llm import extract, extract_stream
-
-pytestmark = pytest.mark.integration
 
 
 class SimpleUser(BaseModel):
@@ -15,131 +15,80 @@ class SimpleUser(BaseModel):
     age: int
 
 
-class Address(BaseModel):
-    """Address model for nested testing."""
+class TestExtractUnit:
+    """Unit tests for extract() with mocked instructor client."""
 
-    street: str
-    city: str
-    country: str
+    @pytest.mark.asyncio
+    async def test_extract_with_prompt(self):
+        """Prompt is converted to messages."""
+        fake_user = SimpleUser(name="Alice", age=30)
+        with patch(
+            "palindrom_ai.llm.structured._client.chat.completions.create",
+            new_callable=AsyncMock,
+            return_value=fake_user,
+        ) as mock_create:
+            result = await extract(
+                response_model=SimpleUser,
+                model="gpt-4o",
+                prompt="Alice is 30",
+            )
 
+        assert result.name == "Alice"
+        assert result.age == 30
+        call_kwargs = mock_create.call_args[1]
+        assert call_kwargs["messages"] == [{"role": "user", "content": "Alice is 30"}]
 
-class Company(BaseModel):
-    """Company with nested address."""
+    @pytest.mark.asyncio
+    async def test_extract_with_messages(self):
+        """Messages are passed through directly."""
+        fake_user = SimpleUser(name="Bob", age=25)
+        msgs = [
+            {"role": "system", "content": "Extract user info."},
+            {"role": "user", "content": "Bob is 25."},
+        ]
+        with patch(
+            "palindrom_ai.llm.structured._client.chat.completions.create",
+            new_callable=AsyncMock,
+            return_value=fake_user,
+        ) as mock_create:
+            result = await extract(
+                response_model=SimpleUser,
+                model="gpt-4o",
+                messages=msgs,
+            )
 
-    name: str
-    industry: str
-    headquarters: Address
+        assert result.name == "Bob"
+        call_kwargs = mock_create.call_args[1]
+        assert call_kwargs["messages"] == msgs
 
+    @pytest.mark.asyncio
+    async def test_extract_no_input_raises(self):
+        """Raises ValueError when neither prompt nor messages provided."""
+        with pytest.raises(ValueError, match="Either messages or prompt must be provided"):
+            await extract(
+                response_model=SimpleUser,
+                model="gpt-4o",
+            )
 
-class UserWithValidation(BaseModel):
-    """User model with custom validation."""
+    @pytest.mark.asyncio
+    async def test_extract_passes_kwargs(self):
+        """Extra kwargs are forwarded to instructor."""
+        fake_user = SimpleUser(name="X", age=1)
+        with patch(
+            "palindrom_ai.llm.structured._client.chat.completions.create",
+            new_callable=AsyncMock,
+            return_value=fake_user,
+        ) as mock_create:
+            await extract(
+                response_model=SimpleUser,
+                model="gpt-4o",
+                prompt="X is 1",
+                temperature=0.5,
+            )
 
-    name: str
-    age: int = Field(ge=0, le=150)
-    email: str
-
-    @field_validator("email")
-    @classmethod
-    def validate_email(cls, v: str) -> str:
-        if "@" not in v:
-            raise ValueError("Invalid email format")
-        return v
-
-
-@pytest.mark.asyncio
-async def test_extract_simple():
-    """Test basic extraction with simple model."""
-    user = await extract(
-        response_model=SimpleUser,
-        model="gpt-4o-mini",
-        prompt="Alice is 30 years old",
-    )
-
-    assert user.name == "Alice"
-    assert user.age == 30
-
-
-@pytest.mark.asyncio
-async def test_extract_with_messages():
-    """Test extraction with message list instead of prompt."""
-    user = await extract(
-        response_model=SimpleUser,
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "Extract user information from the text."},
-            {"role": "user", "content": "Bob is 25 years old."},
-        ],
-    )
-
-    assert user.name == "Bob"
-    assert user.age == 25
-
-
-@pytest.mark.asyncio
-async def test_extract_nested_model():
-    """Test extraction with nested Pydantic models."""
-    company = await extract(
-        response_model=Company,
-        model="gpt-4o-mini",
-        prompt="""
-        Extract company info:
-        Acme Corp is a technology company based at 123 Main St,
-        San Francisco, USA.
-        """,
-    )
-
-    assert company.name == "Acme Corp"
-    assert company.industry.lower() == "technology"
-    assert company.headquarters.city == "San Francisco"
-    assert company.headquarters.country in ["USA", "United States", "US"]
-
-
-@pytest.mark.asyncio
-async def test_extract_with_validation():
-    """Test extraction with custom validators."""
-    user = await extract(
-        response_model=UserWithValidation,
-        model="gpt-4o-mini",
-        prompt="John is 25 years old, email: john@example.com",
-        max_retries=3,
-    )
-
-    assert user.name == "John"
-    assert user.age == 25
-    assert "@" in user.email
-
-
-@pytest.mark.asyncio
-async def test_extract_anthropic():
-    """Test extraction with Anthropic model."""
-    user = await extract(
-        response_model=SimpleUser,
-        model="claude-3-5-haiku-20241022",
-        prompt="Charlie is 40 years old",
-    )
-
-    assert user.name == "Charlie"
-    assert user.age == 40
-
-
-@pytest.mark.asyncio
-async def test_extract_stream():
-    """Test streaming partial extraction."""
-    partials = []
-    async for partial in extract_stream(
-        response_model=SimpleUser,
-        model="gpt-4o-mini",
-        prompt="David is 35 years old",
-    ):
-        partials.append(partial)
-
-    # Should have received multiple partial updates
-    assert len(partials) > 0
-
-    # Final partial should have complete data
-    final = partials[-1]
-    assert final.name == "David"
-    assert final.age == 35
+        call_kwargs = mock_create.call_args[1]
+        assert call_kwargs["temperature"] == 0.5
+        assert call_kwargs["max_retries"] == 3  # default
 
 
 @pytest.mark.asyncio
