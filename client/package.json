@@ -1,9 +1,18 @@
 {
-  "name": "@palindrom-ai/llm-client",
+  "name": "@chrismlittle123/llm-client",
   "version": "0.1.0",
-  "description": "TypeScript client for the Palindrom AI LLM Gateway",
+  "description": "TypeScript client for the LLM Gateway",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": ["dist/"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chrismlittle123/llm.git",
+    "directory": "client"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "generate": "openapi-ts --input ../openapi.json --output src/generated --client @hey-api/client-fetch",
     "build": "tsc",
