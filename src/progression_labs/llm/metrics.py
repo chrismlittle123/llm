@@ -109,19 +109,19 @@ class MetricsBridge:
         # Latency percentiles
         self._meter.create_observable_gauge(
             name="llm.latency.p50",
-            callbacks=[lambda opts: self._get_metric_observations("latency_p50")],
+            callbacks=[lambda _: self._get_metric_observations("latency_p50")],
             description="LLM request latency (50th percentile) by model",
             unit="ms",
         )
         self._meter.create_observable_gauge(
             name="llm.latency.p95",
-            callbacks=[lambda opts: self._get_metric_observations("latency_p95")],
+            callbacks=[lambda _: self._get_metric_observations("latency_p95")],
             description="LLM request latency (95th percentile) by model",
             unit="ms",
         )
         self._meter.create_observable_gauge(
             name="llm.latency.p99",
-            callbacks=[lambda opts: self._get_metric_observations("latency_p99")],
+            callbacks=[lambda _: self._get_metric_observations("latency_p99")],
             description="LLM request latency (99th percentile) by model",
             unit="ms",
         )
@@ -129,13 +129,13 @@ class MetricsBridge:
         # Token usage
         self._meter.create_observable_gauge(
             name="llm.tokens.input",
-            callbacks=[lambda opts: self._get_metric_observations("input_tokens")],
+            callbacks=[lambda _: self._get_metric_observations("input_tokens")],
             description="Total input tokens by model",
             unit="tokens",
         )
         self._meter.create_observable_gauge(
             name="llm.tokens.output",
-            callbacks=[lambda opts: self._get_metric_observations("output_tokens")],
+            callbacks=[lambda _: self._get_metric_observations("output_tokens")],
             description="Total output tokens by model",
             unit="tokens",
         )
@@ -143,7 +143,7 @@ class MetricsBridge:
         # Cost tracking
         self._meter.create_observable_gauge(
             name="llm.cost.total",
-            callbacks=[lambda opts: self._get_metric_observations("total_cost")],
+            callbacks=[lambda _: self._get_metric_observations("total_cost")],
             description="Total cost by model",
             unit="USD",
         )
@@ -151,7 +151,7 @@ class MetricsBridge:
         # Request volume
         self._meter.create_observable_gauge(
             name="llm.requests.count",
-            callbacks=[lambda opts: self._get_metric_observations("request_count")],
+            callbacks=[lambda _: self._get_metric_observations("request_count")],
             description="Request count by model",
             unit="requests",
         )
@@ -159,7 +159,7 @@ class MetricsBridge:
         # Error rate
         self._meter.create_observable_gauge(
             name="llm.errors.count",
-            callbacks=[lambda opts: self._get_metric_observations("error_count")],
+            callbacks=[lambda _: self._get_metric_observations("error_count")],
             description="Error count by model",
             unit="errors",
         )
